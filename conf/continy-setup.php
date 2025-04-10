@@ -1,0 +1,106 @@
+<?php
+
+if (!defined('ABSPATH')) exit;
+
+use Bojaghi\AdminAjax\AdminPost;
+use Bojaghi\Continy\Continy;
+use Bojaghi\Cron;
+use Bojaghi\Fields;
+use Bojaghi\Template;
+use Chwnam\ThreadsToPosts\Modules;
+use Chwnam\ThreadsToPosts\Supports;
+use function Chwnam\ThreadsToPosts\ttpOptions;
+
+return [
+    'main_file' => TTP_MAIN,    // 플러그인 메인 파일
+    'version'   => TTP_VERSION, // 플러그인의 버전
+
+    /**
+     * 훅 선언
+     *
+     * 키: 훅 이름
+     * 값: 콜백 함수에서 허용하는 인자 수, 0 이상의 정수
+     */
+    'hooks'     => [
+        'admin_init' => 0,
+        'init'       => 0,
+    ],
+
+    /**
+     * 바인딩 선언
+     *
+     * 키: 별명 (alias)
+     * 값: 실제 클래스 (FQCN)
+     */
+    'bindings'  => [
+        'bojaghi/adminPost'    => AdminPost::class,
+        'bojaghi/cron'         => Cron\Cron::class,
+        'bojaghi/cronSchedule' => Cron\CronSchedule::class,
+        'bojaghi/template'     => Template\Template::class,
+        'ttp/adminMenu'        => Modules\AdminMenu::class,
+        'ttp/adminPostHandler' => Modules\AdminPostHandler::class,
+        'ttp/cronHandler'      => Modules\CronHandler::class,
+        'ttp/logger'           => Modules\Logger::class,
+        'ttp/options'          => Modules\Options::class,
+        'ttp/scripts'          => Modules\Scripts::class,
+    ],
+
+    /**
+     * 클래스 의존성 주입 선언
+     *
+     * 키: 별명, 또는 FQCN
+     * 값: 배열, 또는 함수 - 함수는 배열을 리턴해야 함
+     */
+    'arguments' => [
+        // Bojaghi module arguments
+        'bojaghi/adminPost'                   => fn(Continy $continy) => [
+            dirname(TTP_MAIN) . '/conf/admin-post-setup.php', // configuration
+            $continy,                                         // container interface
+        ],
+        'bojaghi/cron'                        => dirname(TTP_MAIN) . '/conf/cron-setup.php',
+        'bojaghi/cronSchedule'                => dirname(TTP_MAIN) . '/conf/cron-schedule-setup.php',
+        'bojaghi/template'                    => [
+            [
+                'infix'  => 'tmpl',
+                'scopes' => [dirname(TTP_MAIN) . '/inc/templates'],
+            ]
+        ],
+
+        // TTP module arguments
+        'ttp/options'                         => dirname(TTP_MAIN) . '/conf/options-setup.php',
+
+        // Supports arguments
+        Supports\Threads\Authorization::class => function (): array {
+            $value = ttpOptions()->ttp_auth->get();
+
+            return [
+                'appId'                => $value['app_id'] ?? '',
+                'appSecret'            => $value['app_secret'] ?? '',
+                'redirectCallbackUrl'  => Supports\TokenSupport::getRedirectionCallbackUrl(),
+                'uninstallCallbackUrl' => Supports\TokenSupport::getUninstallCallbackUrl(),
+                'deleteCallbackUrl'    => Supports\TokenSupport::getDeleteCallbackUrl(),
+            ];
+        },
+    ],
+
+    /**
+     * 모듈 선언
+     */
+    'modules'   => [
+        '_'    => [
+            'bojaghi/cron',
+            'bojaghi/cronSchedule',
+            'ttp/cronHandler',
+        ],
+        'init' => [
+            Continy::PR_DEFAULT => [
+                // Bojaghi
+                'bojaghi/adminPost',
+                // TTP
+                'ttp/adminMenu',
+                'ttp/options',
+                'ttp/scripts'
+            ],
+        ],
+    ],
+];

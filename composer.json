@@ -1,0 +1,65 @@
+{
+    "name": "chwnam/theads-to-posts",
+    "description": "Convert your posts of Threads to your posts of WordPress",
+    "homepage": "https://github.com/chwnam/threads-to-posts",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "Chwnam\\ThreadsToPosts\\": "inc\\"
+        },
+        "files": [
+            "inc/continy-helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Chwnam\\ThreadsToPosts\\Tests\\": "tests\\"
+        }
+    },
+    "authors": [],
+    "require": {
+        "php": ">=8.0",
+        "bojaghi/continy": "^1.1",
+        "bojaghi/cron": "^1.0",
+        "monolog/monolog": "^3.9",
+        "bojaghi/template": "^1.0",
+        "bojaghi/fields": "^1.0",
+        "bojaghi/fields-render": "^1.0",
+        "bojaghi/admin-ajax": "^1.0"
+    },
+    "require-dev": {
+        "bojaghi/wp-tests": "^1.1",
+        "phpunit/phpunit": "^9",
+        "yoast/phpunit-polyfills": "^4.0"
+    },
+    "scripts": {
+        "wp-tests": [
+            "@wp-tests:setenv",
+            "vendor/bin/phpunit"
+        ],
+        "wp-tests:clean": [
+            "@wp-tests:setenv",
+            "rm -rf $WP_CORE_DIR $WP_TESTS_DIR"
+        ],
+        "wp-tests:env": [
+            "@wp-tests:setenv",
+            "vendor/bin/wp-tests -d"
+        ],
+        "wp-tests:setenv": [
+            "@putenv WP_CORE_DIR=./tests/wp-test-core",
+            "@putenv WP_TESTS_DIR=./tests/wp-test-lib",
+            "@putenv WP_TESTS_PHPUNIT_POLYFILLS_PATH=./vendor/yoast/phpunit-polyfills",
+            "@putenv DB_HOST=localhost",
+            "@putenv DB_USER=wordpress_tests",
+            "@putenv DB_PASS=wordpress_tests",
+            "@putenv DB_NAME=wordpress_tests"
+        ],
+        "wp-tests:setup": [
+            "@wp-tests:setenv",
+            "@wp-tests:clean",
+            "bin/install-wp-tests.sh $DB_NAME $DB_USER $DB_PASS $DB_HOST latest"
+        ]
+    },
+    "version": "1.0.0"
+}

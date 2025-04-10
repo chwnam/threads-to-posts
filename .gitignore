@@ -1,0 +1,8 @@
+.idea/
+.vscode/
+tests/wp-test-core/
+tests/wp-test-lib/
+vendor/
+
+*.cache
+.DS_Store
