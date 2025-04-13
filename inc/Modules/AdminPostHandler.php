@@ -22,9 +22,21 @@ class AdminPostHandler implements Module
 
         if ('redirect' == $step) {
             ttpCall(TokenSupport::class, 'redirectionCallback');
-            wp_redirect(admin_url('admin.php?page=ttp-settings'));
+            // This action is fired by redirection from Threads, not by our site.
+            // Relying on referrer is not a good idea.
+            wp_redirect(admin_url('tools.php?page=ttp&tab=settings'));
             exit;
         }
+    }
+
+    /**
+     * @param Options $options
+     * @return void
+     */
+    public function deleteToken(Options $options): void
+    {
+        $options->ttp_token->delete();
+        wp_redirect(wp_get_referer());
     }
 
     /**

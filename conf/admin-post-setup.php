@@ -15,6 +15,7 @@ return [
      * Action request access token (long-lived token)
      *
      * @uses AdminPostHandler::accessToken()
+     * @uses AdminPostHandler::deleteToken()
      * @uses AdminPostHandler::forceRefreshToken()
      */
     [
@@ -34,5 +35,16 @@ return [
         SubmitBase::ONLY_PRIV,                    // logged-in user only
         '_ttp_force_refresh_token'                // Automatic nonce check
         // default priority
-    ]
+    ],
+
+    /**
+     * Action request for deleting access token
+     */
+    [
+        'ttp_delete_token',                 // action
+        'ttp/adminPostHandler@deleteToken', // callback
+        SubmitBase::ONLY_PRIV,              // logged-in user only
+        '_ttp_delete_token'                 // Automatic nonce check
+        // default priority
+    ],
 ];

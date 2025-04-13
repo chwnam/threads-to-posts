@@ -1,0 +1,20 @@
+.ttp-tester:not(.last-child) {
+    margin-bottom: 48px;
+}
+
+.ttp-raw_output {
+    color: #2c3338;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    margin: 12px 0;
+    padding: 4px;
+    min-height: 20px;
+    max-height: 240px;
+    overflow: auto;
+}
+
+.ttp-tester .input-group {
+    & > label, & > input {
+        margin-right: 4px;
+    }
+}

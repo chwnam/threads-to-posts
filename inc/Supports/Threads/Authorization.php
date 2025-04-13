@@ -5,7 +5,7 @@ namespace Chwnam\ThreadsToPosts\Supports\Threads;
 use Bojaghi\Contract\Support;
 use Exception;
 
-class Authorization implements Support
+class Authorization extends ApiBase
 {
     /**
      * Constroctor

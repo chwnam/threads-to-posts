@@ -1,0 +1,9 @@
+{
+  "name": "threads-to-posts",
+  "devDependencies": {
+    "livereload": "^0.9.3"
+  },
+  "scripts": {
+    "start": "livereload -e css,js assets"
+  }
+}

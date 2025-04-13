@@ -6,7 +6,7 @@ return [
     // key => option
     'ttp_auth' => [
         'type'              => 'array',
-        'group'             => 'ttp_options',
+        'group'             => 'ttp-options',
         'description'       => 'App ID, and App secret',
         'sanitize_callback' => function ($value): array {
             return [
@@ -25,7 +25,7 @@ return [
 
     'ttp_token' => [
         'type'              => 'array',
-        'group'             => 'ttp_options',
+        'group'             => 'ttp-options',
         'description'       => 'Authorization token from Threads. Must be a long-lived token.',
         'sanitize_callback' => function ($value): array {
             return [

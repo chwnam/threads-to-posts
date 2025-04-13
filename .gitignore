@@ -1,5 +1,6 @@
 .idea/
 .vscode/
+node_modules/
 tests/wp-test-core/
 tests/wp-test-lib/
 vendor/

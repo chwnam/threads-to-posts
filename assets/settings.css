@@ -1,0 +1,61 @@
+#ttp-app_id ~ .description,
+#ttp-app_secret ~ .description {
+    display: inline-block;
+    font-style: italic;
+    margin-left: 8px;
+}
+
+.ttp-callback-url-guide {
+    margin: 0;
+}
+
+.ttp-callback-url-guide .label {
+    cursor: pointer;
+    display: inline-block;
+    min-width: 160px;
+
+    &:after {
+        content: ":";
+    }
+}
+
+.ttp-token-status {
+    margin: 0 0 12px 0;
+}
+
+.ttp-token-status .label {
+    display: inline-block;
+    font-weight: bold;
+    min-width: 100px;
+
+    &:after {
+        content: ":";
+    }
+}
+
+#ttp-force_refresh_token {
+    margin-right: 12px;
+}
+
+.ttp-cron_detail:not(:last-child) {
+    margin-bottom: 24px;
+}
+
+.ttp-cron_detail > h4 {
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 4px;
+}
+
+.ttp-cron_detail ul {
+    margin: 0;
+}
+
+.ttp-cron_detail .label {
+    display: inline-block;
+    min-width: 120px;
+
+    &:after {
+        content: ":";
+    }
+}

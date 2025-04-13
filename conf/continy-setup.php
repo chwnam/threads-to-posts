@@ -2,6 +2,7 @@
 
 if (!defined('ABSPATH')) exit;
 
+use Bojaghi\AdminAjax\AdminAjax;
 use Bojaghi\AdminAjax\AdminPost;
 use Bojaghi\Continy\Continy;
 use Bojaghi\Cron;
@@ -9,7 +10,8 @@ use Bojaghi\Fields;
 use Bojaghi\Template;
 use Chwnam\ThreadsToPosts\Modules;
 use Chwnam\ThreadsToPosts\Supports;
-use function Chwnam\ThreadsToPosts\ttpOptions;
+use function Chwnam\ThreadsToPosts\ttpGetAuth;
+use function Chwnam\ThreadsToPosts\ttpGetToken;
 
 return [
     'main_file' => TTP_MAIN,    // 플러그인 메인 파일
@@ -33,10 +35,12 @@ return [
      * 값: 실제 클래스 (FQCN)
      */
     'bindings'  => [
+        'bojaghi/adminAjax'    => AdminAjax::class,
         'bojaghi/adminPost'    => AdminPost::class,
         'bojaghi/cron'         => Cron\Cron::class,
         'bojaghi/cronSchedule' => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
+        'ttp/adminAjaxHandler' => Modules\AdminAjaxHandler::class,
         'ttp/adminMenu'        => Modules\AdminMenu::class,
         'ttp/adminPostHandler' => Modules\AdminPostHandler::class,
         'ttp/cronHandler'      => Modules\CronHandler::class,
@@ -53,6 +57,10 @@ return [
      */
     'arguments' => [
         // Bojaghi module arguments
+        'bojaghi/adminAjax'                   => fn(Continy $continy) => [
+            dirname(TTP_MAIN) . '/conf/admin-ajax-setup.php', // configuration
+            $continy,                                         // container interface
+        ],
         'bojaghi/adminPost'                   => fn(Continy $continy) => [
             dirname(TTP_MAIN) . '/conf/admin-post-setup.php', // configuration
             $continy,                                         // container interface
@@ -70,12 +78,18 @@ return [
         'ttp/options'                         => dirname(TTP_MAIN) . '/conf/options-setup.php',
 
         // Supports arguments
-        Supports\Threads\Authorization::class => function (): array {
-            $value = ttpOptions()->ttp_auth->get();
-
+        Supports\Threads\Api::class           => function (): array {
+            $value = ttpGetToken();
             return [
-                'appId'                => $value['app_id'] ?? '',
-                'appSecret'            => $value['app_secret'] ?? '',
+                'accessToken' => $value->access_token,
+                'userId'      => $value->user_id,
+            ];
+        },
+        Supports\Threads\Authorization::class => function (): array {
+            $value = ttpGetAuth();
+            return [
+                'appId'                => $value->app_id,
+                'appSecret'            => $value->app_secret,
                 'redirectCallbackUrl'  => Supports\TokenSupport::getRedirectionCallbackUrl(),
                 'uninstallCallbackUrl' => Supports\TokenSupport::getUninstallCallbackUrl(),
                 'deleteCallbackUrl'    => Supports\TokenSupport::getDeleteCallbackUrl(),
@@ -95,6 +109,7 @@ return [
         'init' => [
             Continy::PR_DEFAULT => [
                 // Bojaghi
+                'bojaghi/adminAjax',
                 'bojaghi/adminPost',
                 // TTP
                 'ttp/adminMenu',
