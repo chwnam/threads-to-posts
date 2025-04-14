@@ -7,7 +7,9 @@ use Bojaghi\FieldsRender\AdminCompound as AC;
 use Bojaghi\FieldsRender\Render as R;
 use Bojaghi\Template\Template;
 use Chwnam\ThreadsToPosts\Modules\Options;
-use function Chwnam\ThreadsToPosts\ttpTemplate;
+use function Chwnam\ThreadsToPosts\ttpGetToken;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
+use function Chwnam\ThreadsToPosts\ttpGetTemplate;
 
 class SettingsPage implements Support
 {
@@ -39,6 +41,7 @@ class SettingsPage implements Support
         $this->prepareSectionAuthorization();
         $this->prepareSectionToken();
         $this->prepareSectionCron();
+        $this->prepareSectionMisc();
     }
 
     private function prepareSectionAuthorization(): void
@@ -115,7 +118,7 @@ class SettingsPage implements Support
         add_settings_field(
             id:      'ttp-auth-callback_urls',
             title:   'Callback URLs',
-            callback: function (): void { echo ttpTemplate()->template('callback-url-guide'); },
+            callback: function (): void { echo ttpGetTemplate()->template('callback-url-guide'); },
             page:    'ttp-settings',
             section: 'ttp-auth',
         );
@@ -137,7 +140,7 @@ class SettingsPage implements Support
 
         add_settings_section(
             id:       'ttp-token',
-            title:    'Token',
+            title:    'Access Token',
             callback: '__return_empty_string',
             page:     'ttp-settings',
         );
@@ -145,7 +148,7 @@ class SettingsPage implements Support
         add_settings_field(
             id:      'ttp-token_status',
             title:   'Token Status',
-            callback: function (array $args): void { echo ttpTemplate()->template('token-status', $args); },
+            callback: function (array $args): void { echo ttpGetTemplate()->template('token-status', $args); },
             page:    'ttp-settings',
             section: 'ttp-token',
             args:    [
@@ -174,7 +177,7 @@ class SettingsPage implements Support
 
         add_settings_section(
             id:       'ttp-cron',
-            title:    'Cron',
+            title:    'WP Cron',
             callback: '__return_empty_string',
             page:     'ttp-settings',
         );
@@ -182,10 +185,47 @@ class SettingsPage implements Support
         add_settings_field(
             id:      'ttp-cron_status',
             title:   'Cron Status',
-            callback: function (array $args): void { echo ttpTemplate()->template('cron-status', $args); },
+            callback: function (array $args): void { echo ttpGetTemplate()->template('cron-status', $args); },
             page:    'ttp-settings',
             section: 'ttp-cron',
             args:    $args,
         );
+    }
+
+    private function prepareSectionMisc(): void
+    {
+        $option = $this->options->ttp_misc;
+        $name   = $option->getKey();
+        $value  = $option->get();
+
+        add_settings_section(
+            id:       'ttp-misc',
+            title:    'Misc.',
+            callback: '__return_empty_string',
+            page:     'ttp-settings',
+        );
+
+        add_settings_field(
+            id:      'ttp-enable_tester',
+            title:   'Enable Tester',
+            callback: function (array $args): void {
+                echo R::checkbox(
+                    label:   'Enable tester tab for debugging and testring',
+                    checked: $args['value']['enable_tester'],
+                    attrs:   [
+                                 'id'   => $args['label_for'],
+                                 'name' => $args['name'] . '[enable_tester]',
+                             ]
+                );
+            },
+            page:    'ttp-settings',
+            section: 'ttp-misc',
+            args:    [
+                         'label_for' => 'ttp-show_tester',
+                         'name'      => $name,
+                         'value'     => $value,
+                     ],
+        );
+
     }
 }

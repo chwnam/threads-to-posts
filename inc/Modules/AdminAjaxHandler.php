@@ -4,6 +4,9 @@ namespace Chwnam\ThreadsToPosts\Modules;
 
 use Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Supports\ApiSupport;
+use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
+use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
+use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
 use JetBrains\PhpStorm\NoReturn;
 
 class AdminAjaxHandler implements Module
@@ -15,7 +18,9 @@ class AdminAjaxHandler implements Module
 
         switch ($type) {
             case 'posts':
-                $output = $support->getThreadsPosts();
+                $output = $support->getThreadsPosts(
+                    ['fields' => PostFields::getFields(Fields::ID, Fields::TEXT)]
+                );
                 // Hide access token
                 if (isset($output['paging']['next'])) {
                     $output['paging']['next'] = self::hideAccessToken($output['paging']['next']);
@@ -23,11 +28,19 @@ class AdminAjaxHandler implements Module
                 break;
 
             case 'single':
-                $output = null;
+                $id     = sanitize_text_field($_GET['id'] ?? '');
+                $output = $support->getThreadsSinglePost(
+                    $id,
+                    ['fields' => PostFields::getFields(Fields::ALL)]
+                );
                 break;
 
             case 'conversations':
-                $output = null;
+                $id     = sanitize_text_field($_GET['id'] ?? '');
+                $output = $support->getThreadsConversations(
+                    $id,
+                    ['fields' => ConversationsFields::getFields(Fields::ALL)]
+                );
                 break;
 
             default:

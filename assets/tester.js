@@ -11,7 +11,6 @@ jQuery(function ($) {
         }, options)
 
         retrieve.on('click', (e) => {
-            console.log(typeof e);
             if (setup.onRetrieve) {
                 setup.onRetrieve({
                     action,
@@ -63,8 +62,33 @@ jQuery(function ($) {
                 nonce,
                 rawOutput,
                 retrieve,
-                wrap
             } = data
+
+            const id = $('#ttp-single-id').val()
+            if (0 === id.length) {
+                alert('Please enter a post ID')
+                return
+            }
+
+            wp.ajax.send({
+                beforeSend: () => {
+                    retrieve.prop('disabled', true);
+                },
+                data: {
+                    action,
+                    id,
+                    type: 'single',
+                    nonce,
+                },
+                method: 'get',
+                url: ajaxurl,
+            }).done((response) => {
+                rawOutput.html(response.output)
+            }).fail((xhr) => {
+                console.error(`${xhr.status} ${xhr.statusText} ${xhr.responseText}`)
+            }).always(() => {
+                retrieve.prop('disabled', false);
+            })
         }
     });
 
@@ -75,8 +99,33 @@ jQuery(function ($) {
                 nonce,
                 rawOutput,
                 retrieve,
-                wrap
             } = data
+
+            const id = $('#ttp-conversations-id').val()
+            if (0 === id.length) {
+                alert('Please enter a post ID')
+                return
+            }
+
+            wp.ajax.send({
+                beforeSend: () => {
+                    retrieve.prop('disabled', true);
+                },
+                data: {
+                    action,
+                    id,
+                    type: 'conversations',
+                    nonce,
+                },
+                method: 'get',
+                url: ajaxurl,
+            }).done((response) => {
+                rawOutput.html(response.output)
+            }).fail((xhr) => {
+                console.error(`${xhr.status} ${xhr.statusText} ${xhr.responseText}`)
+            }).always(() => {
+                retrieve.prop('disabled', false);
+            })
         }
     });
 });

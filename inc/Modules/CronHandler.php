@@ -5,7 +5,7 @@ namespace Chwnam\ThreadsToPosts\Modules;
 use Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Supports\TokenSupport;
 use function Chwnam\ThreadsToPosts\ttpGet;
-use function Chwnam\ThreadsToPosts\ttpLogger;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
 
 class CronHandler implements Module
 {
@@ -17,7 +17,7 @@ class CronHandler implements Module
     public function checkLongLiveToken(): void
     {
         $support = ttpGet(TokenSupport::class);
-        $logger  = ttpLogger();
+        $logger  = ttpGetLogger();
 
         if ($support->checkLongLiveTokenRefreshRequired()) {
             $support->refreshLongLivedToken();

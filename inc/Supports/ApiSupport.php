@@ -19,16 +19,18 @@ class ApiSupport implements Support
         $this->api = ttpGet(Api::class, true);
     }
 
-    public function getThreadsPosts()
+    public function getThreadsPosts(string|array $args = ''): array
     {
-        return $this->api->getUserThreads();
+        return $this->api->getUserThreads($args);
     }
 
-    public function getThreadsSinglePosts()
+    public function getThreadsSinglePost(string $threadsMediaId, string|array $args = ''): array
     {
+        return $this->api->getUserSingleThread($threadsMediaId, $args);
     }
 
-    public function getThreadsConversations()
+    public function getThreadsConversations(string $threadsMediaId, string|array $args = ''): array
     {
+        return $this->api->getMediaConversation($threadsMediaId, $args);
     }
 }

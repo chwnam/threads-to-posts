@@ -47,4 +47,21 @@ return [
         'autoload'          => false,
         'get_filter'        => null,
     ],
+
+    'ttp_misc' => [
+        'type'              => 'array',
+        'group'             => 'ttp-options',
+        'description'       => 'Miscellaneous options.',
+        'sanitize_callback' => function ($value): array {
+            return [
+                'enable_tester' => filter_var($value['enable_tester'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            ];
+        },
+        'show_in_rest'      => false,
+        'default'           => [
+            'enable_tester' => false
+        ],
+        'autoload'          => false,
+        'get_filter'        => null,
+    ],
 ];

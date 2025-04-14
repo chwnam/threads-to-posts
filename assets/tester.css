@@ -13,8 +13,30 @@
     overflow: auto;
 }
 
-.ttp-tester .input-group {
-    & > label, & > input {
+.ttp-tester .ttp-retrieve-coltrols {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & label, & input {
         margin-right: 4px;
     }
+
+    & .ttp-retrieve-option-group {
+        display: flex;
+        align-items: center;
+
+        & .ttp-retrieve-option-item {
+            display: flex;
+            align-items: center;
+        }
+
+        & .ttp-retrieve-option-item:not(:last-child) {
+            margin-right: 12px;
+        }
+    }
+}
+
+#ttp-posts-limit {
+    width: 4rem;
 }

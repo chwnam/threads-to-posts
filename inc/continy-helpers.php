@@ -75,6 +75,28 @@ function ttpGetAuth(): object
     return (object)ttpGet(Options::class)->ttp_auth->get();
 }
 
+function ttpGetLogger(): Logger
+{
+    return ttpGet(LoggerModule::class)->get();
+}
+
+/**
+ * Heper for retrieving misc option
+ *
+ * @return object{
+ *     enable_tester: boolean,
+ * }
+ */
+function ttpGetMisc(): object
+{
+    return (object)ttpGet(Options::class)->ttp_misc->get();
+}
+
+function ttpGetTemplate(): Template
+{
+    return ttpGet(Template::class);
+}
+
 /**
  * Helper for retrieving token information
  *
@@ -90,19 +112,3 @@ function ttpGetToken(): object
 {
     return (object)ttpGet(Options::class)->ttp_token->get();
 }
-
-function ttpLogger(): Logger
-{
-    return ttpGet(LoggerModule::class)->get();
-}
-
-function ttpOptions(): Options
-{
-    return ttpGet(Options::class);
-}
-
-function ttpTemplate(): Template
-{
-    return ttpGet(Template::class);
-}
-

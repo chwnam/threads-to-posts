@@ -4,6 +4,6 @@
     "livereload": "^0.9.3"
   },
   "scripts": {
-    "start": "livereload -e css,js assets"
+    "start": "livereload -e css,js,php assets,inc/templates"
   }
 }
