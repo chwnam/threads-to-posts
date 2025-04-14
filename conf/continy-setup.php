@@ -6,6 +6,7 @@ use Bojaghi\AdminAjax\AdminAjax;
 use Bojaghi\AdminAjax\AdminPost;
 use Bojaghi\Continy\Continy;
 use Bojaghi\Cron;
+use Bojaghi\Cpt\CustomPosts;
 use Bojaghi\Fields;
 use Bojaghi\Template;
 use Chwnam\ThreadsToPosts\Modules;
@@ -37,6 +38,7 @@ return [
     'bindings'  => [
         'bojaghi/adminAjax'    => AdminAjax::class,
         'bojaghi/adminPost'    => AdminPost::class,
+        'bojaghi/cpt'          => CustomPosts::class,
         'bojaghi/cron'         => Cron\Cron::class,
         'bojaghi/cronSchedule' => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
@@ -65,6 +67,7 @@ return [
             dirname(TTP_MAIN) . '/conf/admin-post-setup.php', // configuration
             $continy,                                         // container interface
         ],
+        'bojaghi/cpt'                         => dirname(TTP_MAIN) . '/conf/cpt-setup.php',
         'bojaghi/cron'                        => dirname(TTP_MAIN) . '/conf/cron-setup.php',
         'bojaghi/cronSchedule'                => dirname(TTP_MAIN) . '/conf/cron-schedule-setup.php',
         'bojaghi/template'                    => [
@@ -111,6 +114,7 @@ return [
                 // Bojaghi
                 'bojaghi/adminAjax',
                 'bojaghi/adminPost',
+                'bojaghi/cpt',
                 // TTP
                 'ttp/adminMenu',
                 'ttp/options',

@@ -28,6 +28,7 @@ require_once "{$_tests_dir}/includes/functions.php";
  */
 function _manually_load_plugin(): void {
     require_once dirname(__DIR__) . '/vendor/autoload.php';
+    require_once dirname(__DIR__) . '/threads-to-posts.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

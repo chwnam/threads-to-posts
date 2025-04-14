@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Threas to Posts
  * Plugin URI:        https://github.com/chwnam/threads-to-posts
- * Version:           0.3.0
+ * Version:           0.4.0
  * Description:       Archive your threas postings as WordPress postings
  * Author:            chwnam
  * Requires at least: 6.7
@@ -16,7 +16,7 @@ use Bojaghi\Continy\ContinyNotFoundException;
 use function Chwnam\ThreadsToPosts\ttp;
 
 const TTP_MAIN    = __FILE__;
-const TTP_VERSION = '0.3.0';
+const TTP_VERSION = '0.4.0';
 
 try {
     ttp();

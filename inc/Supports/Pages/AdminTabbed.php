@@ -17,11 +17,11 @@ class AdminTabbed implements Support
         $tabs = array_filter(
             [
                 [
-                    'id'        => 'index',
-                    'title'     => 'Index',
-                    'url'       => add_query_arg('tab', 'index'),
-                    'is_active' => $isActive('') || $isActive('index'),
-                    'callback'  => '',
+                    'id'        => 'scrap',
+                    'title'     => 'Scrap',
+                    'url'       => add_query_arg('tab', 'scrap'),
+                    'is_active' => $isActive('') || $isActive('scrap'),
+                    'callback'  => function () {},
                 ],
                 ...[
                     $miscSetup->enable_tester ? [

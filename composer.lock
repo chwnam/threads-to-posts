@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cebfc7e0bc63e57c3b11dbf9a2bcdfcc",
+    "content-hash": "230c1eebaee7537d3fa54a48fb08bcf3",
     "packages": [
         {
             "name": "bojaghi/admin-ajax",
@@ -185,6 +185,46 @@
                 "source": "https://github.com/bojaghi/cron/tree/1.0.1"
             },
             "time": "2025-04-12T22:25:30+00:00"
+        },
+        {
+            "name": "bojaghi/custom-posts",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bojaghi/custom-posts.git",
+                "reference": "018219acceeb6f638173a73e71954c0b7ddc696f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bojaghi/custom-posts/zipball/018219acceeb6f638173a73e71954c0b7ddc696f",
+                "reference": "018219acceeb6f638173a73e71954c0b7ddc696f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "bojaghi/wp-tests": "^1.0",
+                "phpunit/phpunit": "^9",
+                "yoast/phpunit-polyfills": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bojaghi\\Cpt\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "WordPress custom post type package.",
+            "homepage": "https://github.com/bojaghi/custom-posts",
+            "support": {
+                "issues": "https://github.com/bojaghi/custom-posts/issues",
+                "source": "https://github.com/bojaghi/custom-posts/tree/1.0.1"
+            },
+            "time": "2024-11-24T14:46:49+00:00"
         },
         {
             "name": "bojaghi/fields",
