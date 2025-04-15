@@ -4,6 +4,7 @@ namespace Chwnam\ThreadsToPosts\Modules;
 
 use Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Supports\ApiSupport;
+use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
 use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
@@ -16,36 +17,40 @@ class AdminAjaxHandler implements Module
     {
         $type = sanitize_key($_GET['type'] ?? '');
 
-        switch ($type) {
-            case 'posts':
-                $output = $support->getThreadsPosts(
-                    ['fields' => PostFields::getFields(Fields::ID, Fields::TEXT)]
-                );
-                // Hide access token
-                if (isset($output['paging']['next'])) {
-                    $output['paging']['next'] = self::hideAccessToken($output['paging']['next']);
-                }
-                break;
+        try {
+            switch ($type) {
+                case 'posts':
+                    $output = $support->getThreadsPosts(
+                        ['fields' => PostFields::getFields(Fields::ID, Fields::TEXT)]
+                    );
+                    // Hide access token
+                    if (isset($output['paging']['next'])) {
+                        $output['paging']['next'] = self::hideAccessToken($output['paging']['next']);
+                    }
+                    break;
 
-            case 'single':
-                $id     = sanitize_text_field($_GET['id'] ?? '');
-                $output = $support->getThreadsSinglePost(
-                    $id,
-                    ['fields' => PostFields::getFields(Fields::ALL)]
-                );
-                break;
+                case 'single':
+                    $id     = sanitize_text_field($_GET['id'] ?? '');
+                    $output = $support->getThreadsSinglePost(
+                        $id,
+                        ['fields' => PostFields::getFields(Fields::ALL)]
+                    );
+                    break;
 
-            case 'conversations':
-                $id     = sanitize_text_field($_GET['id'] ?? '');
-                $output = $support->getThreadsConversations(
-                    $id,
-                    ['fields' => ConversationsFields::getFields(Fields::ALL)]
-                );
-                break;
+                case 'conversations':
+                    $id     = sanitize_text_field($_GET['id'] ?? '');
+                    $output = $support->getThreadsConversations(
+                        $id,
+                        ['fields' => ConversationsFields::getFields(Fields::ALL)]
+                    );
+                    break;
 
-            default:
-                $output = null;
-                break;
+                default:
+                    $output = null;
+                    break;
+            }
+        } catch (ApiCallException $e) {
+            wp_die($e->getMessage());
         }
 
         if ($output) {

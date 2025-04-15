@@ -23,7 +23,7 @@ class Api extends ApiBase
     }
 
     /**
-     * @link https://developers.facebook.com/docs/threads/retrieve-and-discover-posts/retrieve-posts
+     * @param string|array $args
      *
      * @return array{
      *   data: array{
@@ -34,6 +34,9 @@ class Api extends ApiBase
      *     next: string,
      *   }
      * }
+     *
+     * @throws ApiCallException
+     * @link https://developers.facebook.com/docs/threads/retrieve-and-discover-posts/retrieve-posts
      */
     public function getUserThreads(string|array $args = ''): array
     {
@@ -52,10 +55,7 @@ class Api extends ApiBase
             defaults: $defaults,
         );
 
-        $r    = wp_remote_get($url);
-        $body = wp_remote_retrieve_body($r);
-
-        return json_decode($body, true);
+        return $this->request($url);
     }
 
     /**
@@ -64,6 +64,7 @@ class Api extends ApiBase
      *
      * @return array
      *
+     * @throws ApiCallException
      * @link https://developers.facebook.com/docs/threads/retrieve-and-discover-posts/retrieve-posts#retrieve-a-single-threads-media-object
      */
     public function getUserSingleThread(string $threadsMediaId, string|array $args = ''): array
@@ -78,10 +79,7 @@ class Api extends ApiBase
             defaults: $defaults,
         );
 
-        $r    = wp_remote_get($url);
-        $body = wp_remote_retrieve_body($r);
-
-        return json_decode($body, true);
+        return $this->request($url);
     }
 
     /**
@@ -89,6 +87,7 @@ class Api extends ApiBase
      * @param array|string $args
      * @return array
      *
+     * @throws ApiCallException
      * @link https://developers.facebook.com/docs/threads/retrieve-and-manage-replies/replies-and-conversations#a-thread-s-conversations
      */
     public function getMediaConversation(string $threadsMediaId, array|string $args = ''): array
@@ -108,9 +107,6 @@ class Api extends ApiBase
             defaults: $defaults,
         );
 
-        $r    = wp_remote_get($url);
-        $body = wp_remote_retrieve_body($r);
-
-        return json_decode($body, true);
+        return $this->request($url);
     }
 }

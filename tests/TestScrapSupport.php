@@ -71,16 +71,9 @@ class TestScrapSupport extends WP_UnitTestCase
         $this->assertEquals('ttp-' . $media['id'], $posts[0]->post_name);
 
         // Text update.
-        $oldText       = $media['text'];
         $media['text'] = 'Updated Text';
 
-        // hard update: false
         $this->scrap->updateThreadsMedia($media);
-        $posts = get_posts("numberofposts=1&post_type=ttp_threads&name=ttp-{$media['id']}");
-        $this->assertEquals($oldText, $posts[0]->post_content);
-
-        // hard update: true
-        $this->scrap->updateThreadsMedia($media, true);
         $posts = get_posts("numberofposts=1&post_type=ttp_threads&name=ttp-{$media['id']}");
         $this->assertEquals('Updated Text', $posts[0]->post_content);
     }
@@ -159,16 +152,9 @@ class TestScrapSupport extends WP_UnitTestCase
         $this->assertEquals($parent[0]->ID, $posts[0]->post_parent);
 
         // Text update.
-        $oldText       = $reply['text'];
         $reply['text'] = 'Updated Text';
 
-        // hard update: false
         $this->scrap->updateConversations([$reply]);
-        $posts = get_posts("numberposts=1&post_type=ttp_threads&name=ttp-{$reply['id']}");
-        $this->assertEquals($oldText, $posts[0]->post_content);
-
-        // hard update: true
-        $this->scrap->updateConversations([$reply], true);
         $posts = get_posts("numberposts=1&post_type=ttp_threads&name=ttp-{$reply['id']}");
         $this->assertEquals($reply['text'], $posts[0]->post_content);
     }

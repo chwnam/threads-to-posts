@@ -108,20 +108,17 @@ class ScrapSupport implements Support
         return $filtered;
     }
 
-    public function updateThreadsMedia(array $threadsMedia, bool $hardUpdate = false): void
+    public function updateThreadsMedia(array $threadsMedia): void
     {
         $post = $this->convertThreadsMedia($threadsMedia);
         if (!$post) {
             return;
         }
 
-        $posts   = get_posts("name={$post['post_name']}&numberofposts=1&post_type=ttp_threads");
-        $hasPost = !empty($posts);
-        if ($hasPost && !$hardUpdate) {
-            return;
-        }
+        $posts     = get_posts("name={$post['post_name']}&numberofposts=1&post_type=ttp_threads");
+        $isChanged = $posts && $posts[0]->post_content !== $post['post_content'];
 
-        if ($hasPost) {
+        if ($isChanged) {
             $post['ID'] = $posts[0]->ID;
             wp_update_post($post);
         } else {
@@ -129,7 +126,7 @@ class ScrapSupport implements Support
         }
     }
 
-    public function updateConversations(array $conversations, bool $hardUpdate = false): void
+    public function updateConversations(array $conversations): void
     {
         global $wpdb;
 
@@ -154,7 +151,7 @@ class ScrapSupport implements Support
         $names       = array_map(fn($c) => 'ttp-' . $c['id'], $conversations);
         $placeholder = implode(',', array_fill(0, count($names), '%s'));
         $query       = $wpdb->prepare(
-            "SELECT post_name, ID FROM $wpdb->posts " .
+            "SELECT post_name, ID, post_content FROM $wpdb->posts " .
             " WHERE post_type='ttp_threads' AND post_name IN ($placeholder)",
             $names,
         );
@@ -167,11 +164,13 @@ class ScrapSupport implements Support
             }
 
             $post['post_parent'] = $postParent;
+            $inserted            = $results[$post['post_name']] ?? false;
+            $postId              = $inserted->ID ?? false;
+            $isChanged           = $inserted && $inserted->post_content !== $post['post_content'];
 
-            $postId = $results[$post['post_name']]->ID ?? 0;
             if (!$postId) {
                 wp_insert_post($post);
-            } elseif ($hardUpdate) {
+            } elseif ($isChanged) {
                 $post['ID'] = $postId;
                 wp_update_post($post);
             }

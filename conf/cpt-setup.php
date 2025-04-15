@@ -12,7 +12,7 @@ return [
         'ttp_threads',
         // arguments
         [
-            'label'                           => __('Threads Medium', 'ttp'),
+            'label'                           => __('Threads', 'ttp'),
             /*
             'labels'                          => [
                 'name'                     => _x('', 'ttp_threads label', 'ttp'),
