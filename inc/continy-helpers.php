@@ -9,6 +9,8 @@ use Bojaghi\Continy\ContinyNotFoundException;
 use Bojaghi\Template\Template;
 use Chwnam\ThreadsToPosts\Modules\Logger as LoggerModule;
 use Chwnam\ThreadsToPosts\Modules\Options;
+use Chwnam\ThreadsToPosts\Supports\Threads\Api;
+use Chwnam\ThreadsToPosts\Supports\TokenSupport;
 use Monolog\Logger;
 
 /**
@@ -31,8 +33,8 @@ function ttp(): Continy
 /**
  * @template T
  * @param class-string<T> $id
- * @param string $method
- * @param array|false $args
+ * @param string          $method
+ * @param array|false     $args
  *
  * @return mixed
  */
@@ -50,7 +52,7 @@ function ttpCall(string $id, string $method, array|false $args = false): mixed
 /**
  * @template T
  * @param class-string<T> $id
- * @param bool $constructorCall
+ * @param bool            $constructorCall
  *
  * @return T|object|null
  */
@@ -63,6 +65,17 @@ function ttpGet(string $id, bool $constructorCall = false)
     }
 
     return $instance;
+}
+
+function ttpGetApi(): Api
+{
+    $tokenSupport = ttpGet(TokenSupport::class);
+
+    if ($tokenSupport->checkLongLiveTokenRefreshRequired()) {
+        $tokenSupport->refreshLongLivedToken();
+    }
+
+    return ttpGet(Api::class, true);
 }
 
 /**

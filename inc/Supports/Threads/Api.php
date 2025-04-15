@@ -94,7 +94,7 @@ class Api extends ApiBase
     {
         $defaults = [
             'fields'  => '',
-            'reverse' => 'false',
+            'reverse' => 'true',
         ];
 
         if (isset($args['reverse']) && is_bool($args['reverse'])) {

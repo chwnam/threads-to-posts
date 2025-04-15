@@ -5,11 +5,14 @@ if (!defined('ABSPATH')) exit;
 use Bojaghi\AdminAjax\AdminAjax;
 use Bojaghi\AdminAjax\AdminPost;
 use Bojaghi\Continy\Continy;
-use Bojaghi\Cron;
 use Bojaghi\Cpt\CustomPosts;
+use Bojaghi\Cron;
 use Bojaghi\Fields;
 use Bojaghi\Template;
+use Chwnam\ThreadsToPosts\Interfaces\TaskQueue;
+use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Modules;
+use Chwnam\ThreadsToPosts\Modules\CliHandler;
 use Chwnam\ThreadsToPosts\Supports;
 use function Chwnam\ThreadsToPosts\ttpGetAuth;
 use function Chwnam\ThreadsToPosts\ttpGetToken;
@@ -49,6 +52,9 @@ return [
         'ttp/logger'           => Modules\Logger::class,
         'ttp/options'          => Modules\Options::class,
         'ttp/scripts'          => Modules\Scripts::class,
+        // interface mapping
+        TaskQueue::class       => Supports\OptionTaskQueue::class,
+        TaskRunner::class      => Supports\SimpleTaskRunner::class,
     ],
 
     /**
@@ -88,6 +94,12 @@ return [
                 'userId'      => $value->user_id,
             ];
         },
+        Supports\OptionTaskQueue::class       => function (): array {
+            $value = ttpGetToken();
+            return [
+                'userId' => $value->user_id,
+            ];
+        },
         Supports\Threads\Authorization::class => function (): array {
             $value = ttpGetAuth();
             return [
@@ -108,6 +120,11 @@ return [
             'bojaghi/cron',
             'bojaghi/cronSchedule',
             'ttp/cronHandler',
+            function () {
+                if ('cli' === php_sapi_name() && (defined('WP_CLI') && WP_CLI)) {
+                    \WP_CLI::add_command('ttp', CliHandler::class);
+                }
+            }
         ],
         'init' => [
             Continy::PR_DEFAULT => [

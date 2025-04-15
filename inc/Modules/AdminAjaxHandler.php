@@ -3,24 +3,25 @@
 namespace Chwnam\ThreadsToPosts\Modules;
 
 use Bojaghi\Contract\Module;
-use Chwnam\ThreadsToPosts\Supports\ApiSupport;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
 use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
 use JetBrains\PhpStorm\NoReturn;
+use function Chwnam\ThreadsToPosts\ttpGetApi;
 
 class AdminAjaxHandler implements Module
 {
     #[NoReturn]
-    public function tester(ApiSupport $support): void
+    public function tester(): void
     {
         $type = sanitize_key($_GET['type'] ?? '');
+        $api  = ttpGetApi();
 
         try {
             switch ($type) {
                 case 'posts':
-                    $output = $support->getThreadsPosts(
+                    $output = $api->getUserThreads(
                         ['fields' => PostFields::getFields(Fields::ID, Fields::TEXT)]
                     );
                     // Hide access token
@@ -31,7 +32,7 @@ class AdminAjaxHandler implements Module
 
                 case 'single':
                     $id     = sanitize_text_field($_GET['id'] ?? '');
-                    $output = $support->getThreadsSinglePost(
+                    $output = $api->getUserSingleThread(
                         $id,
                         ['fields' => PostFields::getFields(Fields::ALL)]
                     );
@@ -39,7 +40,7 @@ class AdminAjaxHandler implements Module
 
                 case 'conversations':
                     $id     = sanitize_text_field($_GET['id'] ?? '');
-                    $output = $support->getThreadsConversations(
+                    $output = $api->getMediaConversation(
                         $id,
                         ['fields' => ConversationsFields::getFields(Fields::ALL)]
                     );
