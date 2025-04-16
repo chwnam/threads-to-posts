@@ -5,6 +5,13 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// base64 encoded svg.
+$icon = '';
+$svg  = file_get_contents(dirname(__DIR__) . '/assets/threads.txt');
+if ($svg) {
+    $icon = "data:image/svg+xml;base64,$svg";
+}
+
 return [
     // Begin: ttp_threads
     [
@@ -68,7 +75,7 @@ return [
             'revisions_rest_controller_class' => \WP_Rest_Revisions_Controller::class,
             'late_route_registration'         => false,
             'menu_position'                   => null,
-            'menu_icon'                       => null,
+            'menu_icon'                       => $icon,
             'capability_type'                 => 'post',
             'capabilities'                    => [],
             'map_meta_cap'                    => false,

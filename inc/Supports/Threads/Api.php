@@ -59,7 +59,7 @@ class Api extends ApiBase
     }
 
     /**
-     * @param string $threadsMediaId
+     * @param string       $threadsMediaId
      * @param string|array $args
      *
      * @return array
@@ -83,8 +83,9 @@ class Api extends ApiBase
     }
 
     /**
-     * @param string $threadsMediaId
+     * @param string       $threadsMediaId
      * @param array|string $args
+     *
      * @return array
      *
      * @throws ApiCallException
@@ -93,6 +94,8 @@ class Api extends ApiBase
     public function getMediaConversation(string $threadsMediaId, array|string $args = ''): array
     {
         $defaults = [
+            'after'   => '',
+            'before'  => '',
             'fields'  => '',
             'reverse' => 'true',
         ];

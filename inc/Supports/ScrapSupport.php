@@ -115,14 +115,15 @@ class ScrapSupport implements Support
             return;
         }
 
-        $posts     = get_posts("name={$post['post_name']}&numberofposts=1&post_type=ttp_threads");
-        $isChanged = $posts && $posts[0]->post_content !== $post['post_content'];
+        $posts     = get_posts("name={$post['post_name']}&numberposts=1&post_type=ttp_threads");
+        $isNew     = empty($posts);
+        $isChanged = !$isNew && $posts[0]->post_content !== $post['post_content'];
 
-        if ($isChanged) {
+        if ($isNew) {
+            wp_insert_post($post);
+        } elseif ($isChanged) {
             $post['ID'] = $posts[0]->ID;
             wp_update_post($post);
-        } else {
-            wp_insert_post($post);
         }
     }
 
@@ -157,7 +158,29 @@ class ScrapSupport implements Support
         );
         $results     = $wpdb->get_results($query, OBJECT_K);
 
+        // 1st pass: get my own replies
+        $myOwnReplies = [
+            // Add root post id, too.
+            $conversations[0]['root_post']['id'] => true
+        ];
         foreach ($conversations as $c) {
+            if ($c['is_reply_owned_by_me']) {
+                $myOwnReplies[$c['id']] = true;
+            }
+        }
+
+        // 2nd pass: get replies that are replied to me.
+        $repliedToMe = [];
+        foreach($conversations as $c) {
+            $isReplyOwnedByMe = $c['is_reply_owned_by_me'];
+            $repliedTo = $c['replied_to']['id'];
+            if ($isReplyOwnedByMe && isset($myOwnReplies[$repliedTo])) {
+                $repliedToMe[] = $c;
+            }
+        }
+
+        // 3rd pass: update only my own replies.
+        foreach ($repliedToMe as $c) {
             $post = $this->convertThreadsMedia($c);
             if (!$post) {
                 continue;

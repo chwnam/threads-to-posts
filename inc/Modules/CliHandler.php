@@ -20,7 +20,7 @@ class CliHandler implements Module
     }
 
     /**
-     * Add task to queue
+     * Add task to queue.
      *
      * ## OPTIONS
      *
@@ -52,7 +52,7 @@ class CliHandler implements Module
     }
 
     /**
-     * Initialization
+     * Initialization.
      *
      * Clear queue and add t:scan
      *
@@ -86,32 +86,32 @@ class CliHandler implements Module
      *
      * ## OPTIONS
      *
-     * <tasks>...
-     * : List of tasks.
-     *
-     * [--all]
-     * : Remove all same tasks found in the queue.
+     * <task_idxs>...
+     * : Indice of tasks.
      *
      * @param $args
-     * @param $kwargs
      *
      * @return void
      */
-    public function remove($args, $kwargs): void
+    public function remove($args): void
     {
-        $all   = isset($kwargs['all']);
         $queue = $this->runner->getQueue();
         $items = $queue->export();
 
-        foreach ($args as $task) {
-            do {
-                $pos = array_search($task, $items, true);
-                if (false === $pos) {
-                    break;
-                }
-                array_splice($items, $pos, 1);
-            } while ($all);
+        $indice = array_unique(
+            array_filter(
+                array_map('intval', $args),
+                fn($i) => is_int($i) && $i > -1,
+            )
+        );
+        rsort($indice);
+
+        foreach ($indice as $i) {
+            if (isset($items[$i])) {
+                unset($items[$i]);
+            }
         }
+        $items = array_values($items); // Re-construct index.
 
         $queue->import($items);
         $queue->save();
@@ -133,6 +133,13 @@ class CliHandler implements Module
         WP_CLI::success('Queue cleared.');
     }
 
+    /**
+     * Run task queue.
+     *
+     * ## OPTIONS
+     *
+     * @return void
+     */
     public function run(): void
     {
         $this->runner->run();
@@ -152,8 +159,8 @@ class CliHandler implements Module
 
         if ($items) {
             WP_CLI::line('Tasks:');
-            foreach ($items as $item) {
-                WP_CLI::line('  ' . $item);
+            foreach ($items as $idx => $item) {
+                WP_CLI::line(sprintf("%4d\t%s", $idx, $item));
             }
             WP_CLI::line("\nTotal {$queue->size()} task(s).");
         } else {
