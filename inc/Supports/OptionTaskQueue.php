@@ -3,16 +3,21 @@
 namespace Chwnam\ThreadsToPosts\Supports;
 
 use Bojaghi\Contract\Support;
+use Monolog\Logger;
 use Chwnam\ThreadsToPosts\Interfaces\TaskQueue;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
 
 class OptionTaskQueue implements TaskQueue, Support
 {
+    private Logger $logger;
+
     private array $queue;
 
     private string $queueNaee;
 
     public function __construct(string $userId)
     {
+        $this->logger    = ttpGetLogger();
         $this->queue     = [];
         $this->queueNaee = '_ttp_task_queue_' . $userId;
 
@@ -24,17 +29,33 @@ class OptionTaskQueue implements TaskQueue, Support
         return 0 === count($this->queue);
     }
 
+    public function peek(): string
+    {
+        return $this->queue[0] ?? '';
+    }
+
     public function pop(): string
     {
-        return array_shift($this->queue) ?: '';
+        $task = array_shift($this->queue) ?: '';
+
+        $this->logger->debug("Task $task is popped.");
+
+        return $task;
     }
 
     public function push(string $task, bool $prioritize = false): void
     {
+        $task = trim($task);
+        if (empty($task)) {
+            return;
+        }
+
         if ($prioritize) {
             $this->queue = [$task, ...$this->queue];
+            $this->logger->debug("Task $task is pushed, prioritize=true.");
         } else {
             $this->queue[] = $task;
+            $this->logger->debug("Task $task is pushed.");
         }
     }
 
@@ -60,12 +81,12 @@ class OptionTaskQueue implements TaskQueue, Support
 
     public function save(): void
     {
-        update_option($this->queueNaee, implode(',', $this->export()));
+        set_transient($this->queueNaee, implode(',', $this->export()));
     }
 
     public function load(): void
     {
-        $this->import(explode(',', get_option($this->queueNaee) ?: ''));
+        $this->import(explode(',', get_transient($this->queueNaee) ?: ''));
     }
 
     private static function filterTask(array $tasks): array

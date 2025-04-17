@@ -18,6 +18,13 @@ class Logger implements Module
         $formatter    = new LineFormatter("[%datetime%] %level_name%: %message%\n", 'Y-m-d H:i:s',);
 
         $this->logger->pushHandler($handler->setFormatter($formatter));
+
+        // Add simple stdout handler when WP_CLI is running.
+        if (defined('WP_CLI') && WP_CLI) {
+            $handler   = new StreamHandler('php://stdout');
+            $formatter = new LineFormatter("[%level_name%] %message%\n");
+            $this->logger->pushHandler($handler->setFormatter($formatter));
+        }
     }
 
     public function get(): MonologLogger

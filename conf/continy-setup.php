@@ -46,6 +46,7 @@ return [
         'bojaghi/cronSchedule' => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
         'ttp/adminAjaxHandler' => Modules\AdminAjaxHandler::class,
+        'ttp/adminEdit'        => Modules\AdminEdit::class,
         'ttp/adminMenu'        => Modules\AdminMenu::class,
         'ttp/adminPostHandler' => Modules\AdminPostHandler::class,
         'ttp/cronHandler'      => Modules\CronHandler::class,
@@ -133,6 +134,7 @@ return [
                 'bojaghi/adminPost',
                 'bojaghi/cpt',
                 // TTP
+                'ttp/adminEdit',
                 'ttp/adminMenu',
                 'ttp/options',
                 'ttp/scripts'

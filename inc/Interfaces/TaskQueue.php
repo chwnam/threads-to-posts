@@ -10,6 +10,13 @@ interface TaskQueue
     public function isEmpty(): bool;
 
     /**
+     * Peek the first item
+     *
+     * @return string
+     */
+    public function peek(): string;
+
+    /**
      * Get the first item
      *
      * @return string
