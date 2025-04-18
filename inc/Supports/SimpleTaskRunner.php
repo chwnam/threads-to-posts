@@ -107,16 +107,6 @@ class SimpleTaskRunner implements TaskRunner, Support
         $this->cleanup();
     }
 
-    public function getQueue(): TaskQueue
-    {
-        return $this->queue;
-    }
-
-    public function setQueue(TaskQueue $queue): void
-    {
-        $this->queue = $queue;
-    }
-
     private function _doTask(string $task): bool
     {
         if (preg_match('/^(!?)([tc]):(scan|(?:\d+:)?(?:after|before)=\w+|\d+)$/', $task, $matches)) {
@@ -158,10 +148,26 @@ class SimpleTaskRunner implements TaskRunner, Support
             if ($after) {
                 $this->queue->push("!t:after=$after", true);
             }
-        } catch (ApiCallException $e) {
+        } catch (ApiCallException) {
             return false;
         }
 
+        return true;
+    }
+
+    private function _doThreadSingle(string $subject, bool $appendCursor): bool
+    {
+        try {
+            $data = $this->api->getUserSingleThread($subject, ['fields' => PostFields::getFields(Fields::ALL)]);
+            $text = $data['text'] ?? ''; // Some thread data may be empty. Skip if it does.
+            if ($data && $text) {
+                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
+                $this->scrap->updateThreadsMedia($data);
+                $this->queue->push("{$prefix}c:$subject");
+            }
+        } catch (ApiCallException) {
+            return false;
+        }
         return true;
     }
 
@@ -187,26 +193,10 @@ class SimpleTaskRunner implements TaskRunner, Support
                 $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
                 $this->queue->push("{$prefix}t:after=$after", $appendCursor);
             }
-        } catch (ApiCallException $e) {
+        } catch (ApiCallException) {
             return false;
         }
 
-        return true;
-    }
-
-    private function _doThreadSingle(string $subject, bool $appendCursor): bool
-    {
-        try {
-            $data = $this->api->getUserSingleThread($subject, ['fields' => PostFields::getFields(Fields::ALL)]);
-            $text = $data['text'] ?? ''; // Some thread data does not have text. Skip if it does.
-            if ($data && $text) {
-                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
-                $this->scrap->updateThreadsMedia($data);
-                $this->queue->push("{$prefix}c:$subject");
-            }
-        } catch (ApiCallException $e) {
-            return false;
-        }
         return true;
     }
 
@@ -221,10 +211,24 @@ class SimpleTaskRunner implements TaskRunner, Support
                 ),
                 $appendCursor
             );
-        } catch (ApiCallException $e) {
+        } catch (ApiCallException) {
             return false;
         }
         return true;
+    }
+
+    private function _processConversationsResult(string $threadId, array $result, bool $appendCursor): void
+    {
+        $data  = $result['data'] ?? [];
+        $after = $result['paging']['cursors']['after'] ?? '';
+
+        if ($data) {
+            $this->scrap->updateConversations($data);
+            if ($after) {
+                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
+                $this->queue->push("{$prefix}c:$threadId:after=$after", $appendCursor);
+            }
+        }
     }
 
     private function _doConversationResume(string $subject, bool $appendCursor): bool
@@ -249,29 +253,25 @@ class SimpleTaskRunner implements TaskRunner, Support
                 $this->api->getMediaConversation($threadId, $args),
                 $appendCursor
             );
-        } catch (ApiCallException $e) {
+        } catch (ApiCallException) {
             return false;
         }
         return true;
-    }
-
-    private function _processConversationsResult(string $threadId, array $result, bool $appendCursor): void
-    {
-        $data  = $result['data'] ?? [];
-        $after = $result['paging']['cursors']['after'] ?? '';
-
-        if ($data) {
-            $this->scrap->updateConversations($data);
-            if ($after) {
-                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
-                $this->queue->push("{$prefix}c:$threadId:after=$after", $appendCursor);
-            }
-        }
     }
 
     private function cleanup(): void
     {
         $this->queue->save();
         $this->task = '';
+    }
+
+    public function getQueue(): TaskQueue
+    {
+        return $this->queue;
+    }
+
+    public function setQueue(TaskQueue $queue): void
+    {
+        $this->queue = $queue;
     }
 }

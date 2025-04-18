@@ -23,6 +23,29 @@ class Api extends ApiBase
     }
 
     /**
+     * $param $args
+     *
+     * @param string|array $args
+     *
+     * @return array
+     * @throws ApiCallException
+     */
+    public function getMe(string|array $args = ''): array
+    {
+        $defaults = [
+            'fields' => '',
+        ];
+
+        $url = $this->makeUrl(
+            baseUrl:  "https://graph.threads.net/v1.0/me",
+            args:     $args,
+            defaults: $defaults,
+        );
+
+        return $this->request($url);
+    }
+
+    /**
      * @param string|array $args
      *
      * @return array{

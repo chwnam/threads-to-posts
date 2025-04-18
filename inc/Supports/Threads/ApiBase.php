@@ -27,7 +27,7 @@ abstract class ApiBase implements Support
         $body    = wp_remote_retrieve_body($r);
 
         if (200 !== $code) {
-            throw new ApiCallException($message, $code);
+            throw new ApiCallException("$message: $body", $code);
         }
 
         return json_decode($body, true) ?: [];

@@ -15,7 +15,7 @@ class AdminMenu implements Module
     }
 
     /**
-     * Hook callback to output stylesheets inside of head tag
+     * Hook callback to output stylesheets inside head tag
      *
      * @param string $hook
      * @return void

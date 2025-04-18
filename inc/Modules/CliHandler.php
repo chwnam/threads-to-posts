@@ -4,10 +4,17 @@ namespace Chwnam\ThreadsToPosts\Modules;
 
 use Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
+use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
+use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
+use Chwnam\ThreadsToPosts\Supports\Threads\UserFields;
 use JetBrains\PhpStorm\NoReturn;
+use Monolog\Handler\AbstractHandler;
 use WP_CLI;
 use WP_CLI\ExitException;
 use function Chwnam\ThreadsToPosts\ttpGet;
+use function Chwnam\ThreadsToPosts\ttpGetApi;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
+use function Chwnam\ThreadsToPosts\ttpGetToken;
 
 /**
  * Threads to Posts plugin commands.
@@ -53,66 +60,16 @@ class CliHandler implements Module
     }
 
     /**
-     * Export the task queue to stdout.
-     *
-     * ## OPTIONS:
-     * <file_name>: File name to export. To echo to stdout, use '-' as the file name.
-     *
-     * @param $args
+     * Get information of my account
      *
      * @return void
-     * @throws ExitException
+     * @throws ApiCallException
      */
-    public function export($args): void
+    public function me(): void
     {
-        list($fileName) = $args;
-
-        $fp = fopen('-' === $fileName ? 'php://stdout' : $fileName, 'w');
-        if (!$fp) {
-            WP_CLI::error('Cannot open a file.');
-            exit;
-        }
-
-        $queue = $this->runner->getQueue();
-        $items = $queue->export();
-        foreach ($items as $item) {
-            fwrite($fp, $item . "\n");
-        }
-
-        fclose($fp);
-
-        WP_CLI::success('Queue exported.');
-    }
-
-    /**
-     * Import queue status from a file.
-     *
-     * ## OPTIONS
-     *
-     * <file_name>: File name to import.
-     * [--append]: Append tasks to the queue.
-     *
-     * @param $args
-     *
-     * @return void
-     */
-    public function import($args): void
-    {
-        list($fileName) = $args;
-        $append = isset($kwargs['append']);
-
-        $items = file_get_contents($fileName);
-        $items = explode("\n", $items);
-
-        if ($append) {
-            $items = array_reverse($items);
-        }
-        $queue = $this->runner->getQueue();
-        foreach ($items as $item) {
-            $queue->push($item, $append);
-        }
-
-        WP_CLI::success('Queue imported.');
+        $api = ttpGetApi();
+        $result = $api->getMe(['fields' => UserFields::getFields(Fields::ALL)]);
+        print_r($result);
     }
 
     /**
@@ -149,7 +106,9 @@ class CliHandler implements Module
      *
      * ## OPTIONS
      *
-     * <task_idx>...: Indice of tasks.
+     * <task_idx>...: Indice of tasks. {min}-{max} expression is also available,
+     *                e.g., 2-10 (from index 2 to 10), 3- (from 3 to the end), -10 (from the beginning to 10).
+     *                Param min and max are inclusive.
      *
      * @param $args
      *
@@ -160,9 +119,28 @@ class CliHandler implements Module
         $queue = $this->runner->getQueue();
         $items = $queue->export();
 
+        $indice = [];
+
+        foreach ($args as $arg) {
+            if (str_contains($arg, '-')) {
+                [$start, $end] = explode('-', $arg);
+                if (empty($start)) {
+                    $start = 0;
+                }
+                if (empty($end)) {
+                    $end = count($items) - 1;
+                }
+                for ($i = $start; $i <= $end; $i++) {
+                    $indice[] = $i;
+                }
+            } else {
+                $indice[] = $arg;
+            }
+        }
+
         $indice = array_unique(
             array_filter(
-                array_map('intval', $args),
+                array_map('intval', $indice),
                 fn($i) => is_int($i) && $i > -1,
             )
         );
@@ -179,6 +157,92 @@ class CliHandler implements Module
         $queue->save();
 
         WP_CLI::success('Task(s) removed.');
+    }
+
+    /**
+     * Export the task queue to stdout.
+     *
+     * ## OPTIONS:
+     * <file_name>: File name to export. To echo to stdout, use '-' as the file name.
+     *
+     * @param $args
+     *
+     * @return void
+     * @throws ExitException
+     */
+    public function export($args): void
+    {
+        list($fileName) = $args;
+
+        $fp = fopen('-' === $fileName ? 'php://stdout' : $fileName, 'w');
+        if (!$fp) {
+            WP_CLI::error('Cannot open a file.');
+            exit;
+        }
+
+        $queue = $this->runner->getQueue();
+        $items = $queue->export();
+        foreach ($items as $item) {
+            fwrite($fp, $item . "\n");
+        }
+
+        fclose($fp);
+
+        WP_CLI::success('Queue exported.');
+    }
+
+    /**
+     * Get the access token
+     *
+     * @subcommand access-token
+     *
+     * @return void
+     * @throws ExitException
+     */
+    public function accessToken(): void
+    {
+        $token       = ttpGetToken();
+        $accessToken = $token->access_token;
+        $userId      = $token->user_id;
+
+        if ($token) {
+            WP_CLI::line('Access Token: ' . PHP_EOL . $accessToken);
+            WP_CLI::line('User ID: ' . PHP_EOL . $userId);
+        } else {
+            WP_CLI::error('No access token found.');
+        }
+    }
+
+    /**
+     * Import queue status from a file.
+     *
+     * ## OPTIONS
+     *
+     * <file_name>: File name to import.
+     * [--append]: Append tasks to the queue.
+     *
+     * @param $args
+     *
+     * @return void
+     */
+    public function import($args): void
+    {
+        list($fileName) = $args;
+        $append = isset($kwargs['append']);
+
+        $items = file_get_contents($fileName);
+        $items = explode("\n", $items);
+
+        if ($append) {
+            $items = array_reverse($items);
+        }
+        $queue = $this->runner->getQueue();
+        foreach ($items as $item) {
+            $queue->push($item, $append);
+        }
+        $queue->save();
+
+        WP_CLI::success('Queue imported.');
     }
 
     /**
@@ -200,6 +264,7 @@ class CliHandler implements Module
      *
      * ## OPTIONS
      * [--forever]: Run until the queue is empty
+     * [--log_level=<log_level>]: Set log level. Defaults to 'info'. Available keywords: debug, info, notice, warning, error.
      * [--max_task=<max_task>]: Run at most <max_task>. This switch cannot be used with --forever. Defaults to 25.
      * [--sleep=<sleep>]: Sleep <sleep> seconds after every fetch. Defaults to 2. Minimum 1.
      *
@@ -210,11 +275,44 @@ class CliHandler implements Module
      */
     public function run($_, $kwargs): void
     {
-        // pcntl_signal(SIGINT, [$this, 'shutdown']);
+        // Set the log level.
+        $logLevel = $kwargs['log_level'] ?? 'info';
+        $logger   = ttpGetLogger();
+        foreach ($logger->getHandlers() as $handler) {
+            if ($handler instanceof AbstractHandler) {
+                $handler->setLevel($logLevel);;
+            }
+        }
+
+        // Before shutdown, save the current status.
+        $callback = function () {
+            $this->runner->getQueue()->push($this->runner->getTask(), true);
+            $this->runner->getQueue()->save();
+            WP_CLI::success('Run terminated by Ctrl+C.');
+        };
+
+        pcntl_async_signals(true);
+        pcntl_signal(SIGINT, $callback);
 
         $this->runner->run($kwargs);
 
         WP_CLI::success('Run finished.');
+    }
+
+    public function test(): void
+    {
+        $callback = function ($signal) {
+            echo "Signal $signal received. Ok I'll let you go.";
+            exit;
+        };
+
+        pcntl_async_signals(true);
+        pcntl_signal(SIGINT, $callback);
+
+        while (true) {
+            echo "I won't let you go.\n";
+            sleep(3);
+        }
     }
 
     #[NoReturn]

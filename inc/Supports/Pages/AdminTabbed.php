@@ -21,7 +21,14 @@ class AdminTabbed implements Support
                     'title'     => 'Scrap',
                     'url'       => add_query_arg('tab', 'scrap'),
                     'is_active' => $isActive('') || $isActive('scrap'),
-                    'callback'  => function () {},
+                    'callback'  => function () { },
+                ],
+                [
+                    'id'        => 'task-manager',
+                    'title'     => 'Task Manager',
+                    'url'       => add_query_arg('tab', 'task-manager'),
+                    'is_active' => $isActive('task-manager'),
+                    'callback'  => function () { ttpGet(TaskManagerPage::class)->render(); },
                 ],
                 ...[
                     $miscSetup->enable_tester ? [

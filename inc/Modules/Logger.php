@@ -5,23 +5,26 @@ namespace Chwnam\ThreadsToPosts\Modules;
 use Bojaghi\Contract\Module;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
+use Monolog\Level;
 use Monolog\Logger as MonologLogger;
 
 class Logger implements Module
 {
     private MonologLogger $logger;
 
-    public function __construct()
+    public function __construct(string|Level $logLevel = Level::Debug)
     {
+        $logLevel = MonologLogger::toMonologLevel($logLevel);
+
         $this->logger = new MonologLogger('threads-to-posts');
-        $handler      = new StreamHandler(static::getLogPath());
+        $handler      = new StreamHandler(static::getLogPath(), $logLevel);
         $formatter    = new LineFormatter("[%datetime%] %level_name%: %message%\n", 'Y-m-d H:i:s',);
 
         $this->logger->pushHandler($handler->setFormatter($formatter));
 
-        // Add simple stdout handler when WP_CLI is running.
+        // Add a simple stdout handler when WP_CLI is running.
         if (defined('WP_CLI') && WP_CLI) {
-            $handler   = new StreamHandler('php://stdout');
+            $handler   = new StreamHandler('php://stdout', $logLevel);
             $formatter = new LineFormatter("[%level_name%] %message%\n");
             $this->logger->pushHandler($handler->setFormatter($formatter));
         }

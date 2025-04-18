@@ -57,16 +57,16 @@
         },
         {
             "name": "bojaghi/continy",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bojaghi/continy.git",
-                "reference": "8a893fb338ae00057b77a1b453a397dd4d1e5d32"
+                "reference": "451bdba09c1e72956298a151cd16b63d6dedabff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bojaghi/continy/zipball/8a893fb338ae00057b77a1b453a397dd4d1e5d32",
-                "reference": "8a893fb338ae00057b77a1b453a397dd4d1e5d32",
+                "url": "https://api.github.com/repos/bojaghi/continy/zipball/451bdba09c1e72956298a151cd16b63d6dedabff",
+                "reference": "451bdba09c1e72956298a151cd16b63d6dedabff",
                 "shasum": ""
             },
             "require": {
@@ -98,9 +98,9 @@
             "homepage": "https://github.com/bojaghi/continy",
             "support": {
                 "issues": "https://github.com/bojaghi/continy/issues",
-                "source": "https://github.com/bojaghi/continy/tree/1.1.1"
+                "source": "https://github.com/bojaghi/continy/tree/1.1.2"
             },
-            "time": "2025-04-11T17:07:23+00:00"
+            "time": "2025-04-19T07:51:23+00:00"
         },
         {
             "name": "bojaghi/contract",

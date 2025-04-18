@@ -45,6 +45,7 @@ return [
         'bojaghi/cron'         => Cron\Cron::class,
         'bojaghi/cronSchedule' => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
+        'ttp/actvDctv'         => Modules\ActivationDeactivation::class,
         'ttp/adminAjaxHandler' => Modules\AdminAjaxHandler::class,
         'ttp/adminEdit'        => Modules\AdminEdit::class,
         'ttp/adminMenu'        => Modules\AdminMenu::class,
@@ -120,6 +121,7 @@ return [
         '_'    => [
             'bojaghi/cron',
             'bojaghi/cronSchedule',
+            'ttp/actvDctv',
             'ttp/cronHandler',
             function () {
                 if ('cli' === php_sapi_name() && (defined('WP_CLI') && WP_CLI)) {

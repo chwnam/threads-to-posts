@@ -6,6 +6,9 @@ use Bojaghi\Contract\Module;
 use WP_Post;
 use WP_Query;
 use WP_Screen;
+use function Chwnam\ThreadsToPosts\ttpGetTemplate;
+use function Chwnam\ThreadsToPosts\ttpPostPermalink;
+use function Chwnam\ThreadsToPosts\ttpUnprefix;
 
 /**
  * Customize edit.php for CPT 'ttp_threads'
@@ -15,13 +18,24 @@ class AdminEdit implements Module
     public function __construct()
     {
         add_action('current_screen', [$this, 'init']);
+        add_filter('use_block_editor_for_post_type', [$this, 'disableBlockEditor'], 10, 2);
+    }
+
+    public function disableBlockEditor(bool $value, string $postType): bool
+    {
+        return 'ttp_threads' === $postType ? false : $value;
     }
 
     public function init(WP_Screen $screen): void
     {
+        // hooks only for the single edit page.
+        if ('post' === $screen->base && 'ttp_threads' === $screen->post_type) {
+            add_action('add_meta_boxes_ttp_threads', [$this, 'editMetaBoxes']);
+            add_action('edit_form_after_editor', [$this, 'outputContent']);
+        }
+
         // hooks only for the list page.
         if ('edit' === $screen->base && 'ttp_threads' === $screen->post_type) {
-            add_action('add_meta_boxes_ttp_threads', [$this, 'editMetaBoxes']);
             add_filter("bulk_actions-$screen->id", [$this, 'editBulkActions']);
             add_filter('page_row_actions', [$this, 'editRowActions'], 10, 2);
             add_filter('quick_edit_enabled_for_post_type', [$this, 'removeQuickEdit'], 10, 2);
@@ -43,7 +57,7 @@ class AdminEdit implements Module
     }
 
     /**
-     * Edit 'where' clause of the main query
+     * Edit the 'where' clause of the main query
      *
      * @param WP_Query $query
      *
@@ -91,6 +105,32 @@ class AdminEdit implements Module
         }
 
         return $title;
+    }
+
+    public function outputContent(WP_Post $post): void
+    {
+        $context = [
+            'id'         => ttpUnprefix($post->post_name),
+            'owner'      => get_post_meta($post->ID, '_ttp_owner', true),
+            'permalink'  => ttpPostPermalink($post),
+            'shortcode'  => $post->post_content,
+            'text'       => wpautop(wptexturize($post->post_content)),
+            'timestamp'  => $post->post_date,
+            'username'   => get_post_meta($post->ID, '_ttp_username', true),
+            'show_embed' => false,
+        ];
+
+        $referer = wp_get_referer();
+        $admin   = admin_url('edit.php');
+        if (str_starts_with($referer, $admin)) {
+            // To keep the query string.
+            $context['back_link'] = $referer;
+        } else {
+            // Visited from nowhere.
+            $context['back_link'] = $admin . '?post_type=ttp_threads';
+        }
+
+        echo ttpGetTemplate()->template('admin-single', $context);
     }
 
     public function removeQuickEdit(bool $enabled, string $post_type): bool

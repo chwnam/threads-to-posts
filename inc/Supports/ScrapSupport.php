@@ -22,6 +22,7 @@ class ScrapSupport implements Support
      * - username (optional)
      *
      * @param array $threadsMedia
+     *
      * @return array|false
      */
     public function convertThreadsMedia(array $threadsMedia): array|false
@@ -50,7 +51,8 @@ class ScrapSupport implements Support
             'post_type'      => 'ttp_threads',
             'post_name'      => "ttp-$id",
             'meta_input'     => [
-                '_ttp_username' => $username,
+                '_ttp_timestamp' => time(),
+                '_ttp_username'  => $username,
             ],
         ];
 
@@ -171,9 +173,9 @@ class ScrapSupport implements Support
 
         // 2nd pass: get replies that are replied to me.
         $repliedToMe = [];
-        foreach($conversations as $c) {
+        foreach ($conversations as $c) {
             $isReplyOwnedByMe = $c['is_reply_owned_by_me'];
-            $repliedTo = $c['replied_to']['id'];
+            $repliedTo        = $c['replied_to']['id'];
             if ($isReplyOwnedByMe && isset($myOwnReplies[$repliedTo])) {
                 $repliedToMe[] = $c;
             }

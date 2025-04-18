@@ -12,6 +12,7 @@ use Chwnam\ThreadsToPosts\Modules\Options;
 use Chwnam\ThreadsToPosts\Supports\Threads\Api;
 use Chwnam\ThreadsToPosts\Supports\TokenSupport;
 use Monolog\Logger;
+use WP_Post;
 
 /**
  * Wrapper function
@@ -124,4 +125,26 @@ function ttpGetTemplate(): Template
 function ttpGetToken(): object
 {
     return (object)ttpGet(Options::class)->ttp_token->get();
+}
+
+function ttpPrefix(string $string): string
+{
+    return "ttp-$string";
+}
+
+function ttpUnprefix(string $string): string
+{
+    return substr($string, 4);
+}
+
+function ttpPostPermalink(WP_Post $post): string
+{
+    if ('ttp_threads' !== $post->post_type) {
+        return '';
+    }
+
+    $userName  = get_post_meta($post->ID, '_ttp_user_name', true);
+    $shortcode = $post->post_title;
+
+    return "https://www.threads.net/@$userName/post/$shortcode";
 }

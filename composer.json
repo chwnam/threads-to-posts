@@ -27,7 +27,8 @@
         "bojaghi/fields": "^1.0",
         "bojaghi/fields-render": "^1.0",
         "bojaghi/admin-ajax": "^1.0",
-        "bojaghi/custom-posts": "^1.0"
+        "bojaghi/custom-posts": "^1.0",
+        "ext-pcntl": "*"
     },
     "require-dev": {
         "bojaghi/wp-tests": "^1.1",
