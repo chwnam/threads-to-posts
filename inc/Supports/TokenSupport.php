@@ -38,7 +38,9 @@ class TokenSupport implements Support
     public function redirectionCallback(): void
     {
         try {
-            $shortLivedToken           = $this->auth->exchangeCodeWithAccessToken();
+            $shortLivedToken = $this->auth->exchangeCodeWithAccessToken();
+            sleep(2);
+
             $longLivedToken            = $this->auth->exchangeWithLongLivedToken($shortLivedToken['access_token']);
             $longLivedToken['user_id'] = $shortLivedToken['user_id'];
 

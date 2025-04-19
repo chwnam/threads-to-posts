@@ -131,7 +131,7 @@ class Authorization extends ApiBase
             'https://graph.threads.net/access_token',
             [
                 'method' => 'GET',
-                'data'   => [
+                'body'   => [
                     'grant_type'    => 'th_exchange_token',
                     'client_secret' => $this->appSecret,
                     'access_token'  => $accessToken,
