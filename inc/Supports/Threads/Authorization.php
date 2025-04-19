@@ -12,11 +12,11 @@ class Authorization extends ApiBase
      *
      * These params can be found in you App dashboard > Use cases > Customize > Settings
      *
-     * @param string $appId App ID
-     * @param string $appSecret App Secret
-     * @param string $redirectCallbackUrl Redirection callback URI
+     * @param string $appId                App ID
+     * @param string $appSecret            App Secret
+     * @param string $redirectCallbackUrl  Redirection callback URI
      * @param string $uninstallCallbackUrl Uninstall callback URI
-     * @param string $deleteCallbackUrl Delete callback URI
+     * @param string $deleteCallbackUrl    Delete callback URI
      */
     public function __construct(
         private string $appId,
@@ -28,6 +28,12 @@ class Authorization extends ApiBase
     {
     }
 
+    /**
+     * Step 1: Get authorization
+     *
+     * @return string
+     * @link https://developers.facebook.com/docs/threads/get-started/get-access-tokens-and-permissions#step-1--get-authorization
+     */
     public function getRequestUri(): string
     {
         return add_query_arg(
@@ -45,11 +51,17 @@ class Authorization extends ApiBase
     }
 
     /**
+     * Step 2: Exchangeo the code for a token
+     *
      * @param string $state
      * @param string $code
      *
-     * @return array{access_token: string, user_id: string}
+     * @return array{
+     *     access_token: string,
+     *     user_id: string,
+     * }
      * @throws Exception
+     * @link https://developers.facebook.com/docs/threads/get-started/get-access-tokens-and-permissions#step-2--exchange-the-code-for-a-token
      */
     public function exchangeCodeWithAccessToken(string $code = '', string $state = ''): array
     {
@@ -65,72 +77,65 @@ class Authorization extends ApiBase
             throw new Exception('Invalid state');
         }
 
-        self::removeState($state);
-
-        $r = wp_remote_post(
+        /**
+         * @var array{
+         *     access_token: string,
+         *     user_id: string,
+         * } $data
+         */
+        $data = $this->request(
             'https://graph.threads.net/oauth/access_token',
             [
-                'body' => [
+                'method' => 'POST',
+                'body'   => [
                     'client_id'     => $this->appId,
                     'client_secret' => $this->appSecret,
                     'code'          => $code,
                     'grant_type'    => 'authorization_code',
                     'redirect_uri'  => $this->redirectCallbackUrl,
                 ],
-            ],
+            ]
         );
 
-        $responseCode = wp_remote_retrieve_response_code($r);
-        $resposeBody  = wp_remote_retrieve_body($r);
-
-        if (200 !== $responseCode) {
-            throw new Exception('Access token request failed with code: ' . $responseCode);
-        }
-
-        $data        = json_decode($resposeBody, true);
-        $accessToken = $data['access_token'] ?? '';
-        $userId      = $data['user_id'] ?? '';
-
         return [
-            'access_token' => $accessToken,
-            'user_id'      => $userId,
+            'access_token' => $data['access_token'],
+            'user_id'      => $data['user_id'],
         ];
     }
 
     /**
+     * Get a long-lived token
+     *
      * @param string $accessToken
      *
-     * @return array{acccess_token: string, token_type: string, expires_in: int, timestamp: int}
+     * @return array{
+     *     acccess_token: string,
+     *     token_type: string,
+     *     expires_in: int,
+     *     timestamp: int,
+     * }
      * @throws Exception
+     * @link https://developers.facebook.com/docs/threads/get-started/long-lived-tokens#get-a-long-lived-token
      */
     public function exchangeWithLongLivedToken(string $accessToken): array
     {
-        $r = wp_remote_get(
-            add_query_arg(
-                [
+        /**
+         * @var array{
+         *     access_token: string,
+         *     token_type: string,
+         *     expires_in: int,
+         * } $data
+         */
+
+        $data = $this->request(
+            'https://graph.threads.net/access_token',
+            [
+                'method' => 'GET',
+                'body'   => [
                     'grant_type'    => 'th_exchange_token',
                     'client_secret' => $this->appSecret,
                     'access_token'  => $accessToken,
-                ],
-                'https://graph.threads.net/access_token',
-            )
-        );
-
-        $responseCode = wp_remote_retrieve_response_code($r);
-        $resposeBody  = wp_remote_retrieve_body($r);
-
-        if (200 !== $responseCode) {
-            throw new Exception('Access token request failed with code: ' . $responseCode);
-        }
-
-        $data = wp_parse_args(
-            json_decode($resposeBody, true),
-            [
-                'access_token' => '',
-                'token_type'   => '',
-                'expires_in'   => 0,
-                'timestamp'    => 0,
-                'user_id'      => '',
+                ]
             ]
         );
 
@@ -140,35 +145,36 @@ class Authorization extends ApiBase
     }
 
     /**
+     * Refresh a long-lived token
+     *
+     * @param string $accessToken
+     *
+     * @return array{
+     *     acccess_token: string,
+     *     token_type: string,
+     *     expires_in: int,
+     *     timestamp: int,
+ * }
      * @throws Exception
+     * @link https://developers.facebook.com/docs/threads/get-started/long-lived-tokens#refresh-a-long-lived-token
      */
     public function refreshLongLivedToken(string $accessToken): array
     {
-        $r = wp_remote_get(
-            add_query_arg(
-                [
+        /**
+         * @var array{
+         *     access_token: string,
+         *     token_type: string,
+         *     expires_in: int,
+         * } $data
+         */
+        $data = $this->request(
+            'https://graph.threads.net/refresh_access_token',
+            [
+                'method' => 'GET',
+                'data'   => [
                     'grant_type'   => 'th_refresh_token',
                     'access_token' => $accessToken,
-                ],
-                'https://graph.threads.net/refresh_access_token',
-            )
-        );
-
-        $responseCode = wp_remote_retrieve_response_code($r);
-        $resposeBody  = wp_remote_retrieve_body($r);
-
-        if (200 !== $responseCode) {
-            throw new Exception('Access token request failed with code: ' . $responseCode);
-        }
-
-        $data = wp_parse_args(
-            json_decode($resposeBody, true),
-            [
-                'access_token' => '',
-                'token_type'   => '',
-                'expires_in'   => 0,
-                'timestamp'    => 0,
-                'user_id'      => '',
+                ]
             ]
         );
 
@@ -193,14 +199,10 @@ class Authorization extends ApiBase
         $id       = $exploded[0] ?? '';
         $value    = $exploded[1] ?? '';
 
-        return get_transient('_ttp_auth_state_' . $id) === $value;
-    }
+        $key   = '_ttp_auth_state_' . $id;
+        $saved = get_transient($key);
+        delete_transient($key);
 
-    private static function removeState(string $state): void
-    {
-        $exploded = explode(':', $state, 2);
-        $id       = $exploded[0] ?? '';
-
-        delete_transient('_ttp_auth_state_' . $id);
+        return $saved === $value;
     }
 }

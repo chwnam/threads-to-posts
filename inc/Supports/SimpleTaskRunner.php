@@ -109,153 +109,115 @@ class SimpleTaskRunner implements TaskRunner, Support
 
     private function _doTask(string $task): bool
     {
-        if (preg_match('/^(!?)([tc]):(scan|(?:\d+:)?(?:after|before)=\w+|\d+)$/', $task, $matches)) {
-            $appendCursor = !empty($matches[1]);
-            $symbol       = $matches[2];
-            $subject      = $matches[3];
+        // Aliases
+        if ('light-scrap' === $task) {
+            $this->queue->push('t::fields=id,timestamp');
+            return true;
+        } elseif ('heavy-scrap' === $task) {
+            $this->queue->push('tx::', true);
+            return true;
+        }
 
-            // route
-            if ('t' === $symbol) {
-                if ('scan' == $subject) {
-                    return $this->_doThreadsScan();
-                } elseif (is_numeric($subject)) {
-                    return $this->_doThreadSingle($subject, $appendCursor);
-                } elseif (str_starts_with($subject, 'before') || str_starts_with($subject, 'after')) {
-                    return $this->_doThreadsResume($subject, $appendCursor);
+        if (preg_match(
+            '/^(?<job>[tc])(?<intent>x?):(?<id>\d*)(?::(?<params>.*))?$/',
+            $task,
+            $matches
+        )) {
+            $job    = $matches['job'];
+            $intent = $matches['intent']; // x: heavy-scrap, empty: light-scrap.
+            $id     = $matches['id'];
+            $params = $matches['params'] ?? '';
+
+            try {
+                // Route
+                if ('t' === $job) {
+                    if (empty($id)) {
+                        return $this->_scrapThreadsList($params, $intent);
+                    } else {
+                        return $this->_scrapThreadSingle($id, $params, $intent);
+                    }
+                } elseif ('c' === $job && $id) {
+                    // Get conversations
+                    return $this->_scrapConverastions($id, $params, $intent);
                 }
-            } elseif ('c' === $symbol) {
-                if (is_numeric($subject)) {
-                    return $this->_doConversationScan($subject, $appendCursor);
-                } elseif (str_contains($subject, 'before') || str_contains($subject, 'after')) {
-                    return $this->_doConversationResume($subject, $appendCursor);
-                }
+            } catch (ApiCallException $e) {
+                $this->logger->error("ApiCallException catched. Message: {$e->getMessage()}");
+                return false;
             }
         }
+
+        $this->logger->error(sprintf('Task %s is not supported.', $task));
 
         return false;
     }
 
-    private function _doThreadsScan(): bool
+    /**
+     * @throws ApiCallException
+     */
+    private function _scrapThreadsList(string $params, string $intent): bool
     {
-        try {
-            $result = $this->api->getUserThreads(['fields' => PostFields::getFields(Fields::ID)]);
-            $data   = array_map(fn($data) => $data['id'], $result['data']);
-            $after  = $result['paging']['cursors']['after'] ?? '';
+        $result  = $this->api->getUserThreads($params);
+        $data    = $result['data'];
+        $hasNext = isset($result['paging']['next']);
+        $after   = $result['paging']['cursors']['after'] ?? '';
 
-            foreach ($data as $id) {
-                $this->queue->push("t:$id");
-            }
-            if ($after) {
-                $this->queue->push("!t:after=$after", true);
-            }
-        } catch (ApiCallException) {
-            return false;
+        // In normal intent, threads posts earlier than 15 minutes are skipped.
+        // We assume that timestamp field always exists and is valid.
+        if ('' === $intent) {
+            $data = self::filterOldItems($data);
+        }
+
+        foreach ($data as $item) {
+            $this->queue->push("t$intent:$item[id]:");
+        }
+
+        // Only eXtended intent wants next pages.
+        if ('x' === $intent && $hasNext && $after) {
+            $newParams = self::mergeParams($params, ['after' => $after]);
+            $this->queue->push("t$intent::$newParams", true);
         }
 
         return true;
     }
 
-    private function _doThreadSingle(string $subject, bool $appendCursor): bool
+    /**
+     * @throws ApiCallException
+     */
+    private function _scrapThreadSingle(string $threadsId, string $params, string $intent): bool
     {
-        try {
-            $data = $this->api->getUserSingleThread($subject, ['fields' => PostFields::getFields(Fields::ALL)]);
-            $text = $data['text'] ?? ''; // Some thread data may be empty. Skip if it does.
-            if ($data && $text) {
-                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
-                $this->scrap->updateThreadsMedia($data);
-                $this->queue->push("{$prefix}c:$subject");
-            }
-        } catch (ApiCallException) {
-            return false;
-        }
-        return true;
-    }
+        $params = self::mergeParams($params, ['fields' => PostFields::getFields(Fields::ALL)]);
+        $data   = $this->api->getUserSingleThread($threadsId, $params);
 
-    private function _doThreadsResume(string $subject, bool $appendCursor): bool
-    {
-        try {
-            [$key, $value] = explode('=', $subject, 2);
-
-            $args = [
-                'after'  => 'after' === $key ? $value : '',
-                'before' => 'before' === $key ? $value : '',
-                'fields' => PostFields::getFields(Fields::ID),
-            ];
-
-            $result = $this->api->getUserThreads($args);
-            $data   = array_map(fn($data) => $data['id'], $result['data'] ?? []);
-            $after  = $result['paging']['cursors']['after'] ?? '';
-
-            foreach ($data as $id) {
-                $this->queue->push("t:$id");
-            }
-            if ($after) {
-                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
-                $this->queue->push("{$prefix}t:after=$after", $appendCursor);
-            }
-        } catch (ApiCallException) {
-            return false;
-        }
+        $this->scrap->updateThreadsMedia($data);
+        $this->queue->push("c$intent:$threadsId:fields=" . ConversationsFields::getFields(Fields::ALL));
 
         return true;
     }
 
-    private function _doConversationScan(string $subject, bool $appendCursor): bool
+    /**
+     * @throws ApiCallException
+     */
+    private function _scrapConverastions(string $threadsId, string $params, string $intent): bool
     {
-        try {
-            $this->_processConversationsResult(
-                $subject,
-                $this->api->getMediaConversation(
-                    $subject,
-                    ['fields' => ConversationsFields::getFields(Fields::ALL)]
-                ),
-                $appendCursor
-            );
-        } catch (ApiCallException) {
-            return false;
+        $result  = $this->api->getMediaConversation($threadsId, $params);
+        $data    = $result['data'] ?? [];
+        $hasNext = isset($result['paging']['next']);
+        $after   = $result['paging']['cursors']['after'] ?? '';
+
+        // In normal intent, threads replies earlier than 15 minutes are skipped.
+        // We assume that timestamp field always exists and is valid.
+        if ('' === $intent) {
+            $data = self::filterOldItems($data);
         }
-        return true;
-    }
 
-    private function _processConversationsResult(string $threadId, array $result, bool $appendCursor): void
-    {
-        $data  = $result['data'] ?? [];
-        $after = $result['paging']['cursors']['after'] ?? '';
+        $this->scrap->updateConversations($data);
 
-        if ($data) {
-            $this->scrap->updateConversations($data);
-            if ($after) {
-                $prefix = $appendCursor ? '!' : ''; // inherit $appendCursor.
-                $this->queue->push("{$prefix}c:$threadId:after=$after", $appendCursor);
-            }
+        // Only eXtended intent wants next pages.
+        if ('x' === $intent && $hasNext && $after) {
+            $newParams = self::mergeParams($params, ['after' => $after]);
+            $this->queue->push("c$intent:$threadsId:$newParams");
         }
-    }
 
-    private function _doConversationResume(string $subject, bool $appendCursor): bool
-    {
-        try {
-            // Valid format c:<thread_id>,(before|after)=<cursor>
-            if (!str_contains($subject, ',') || !str_contains($subject, '=')) {
-                return false;
-            }
-
-            [$threadId, $cursor] = explode(',', $subject, 2);
-            [$key, $value] = explode('=', $cursor, 2);
-
-            $args = [
-                'after'  => 'after' === $key ? $value : '',
-                'before' => 'before' === $key ? $value : '',
-                'fields' => ConversationsFields::getFields(Fields::ALL),
-            ];
-
-            $this->_processConversationsResult(
-                $threadId,
-                $this->api->getMediaConversation($threadId, $args),
-                $appendCursor
-            );
-        } catch (ApiCallException) {
-            return false;
-        }
         return true;
     }
 
@@ -273,5 +235,28 @@ class SimpleTaskRunner implements TaskRunner, Support
     public function setQueue(TaskQueue $queue): void
     {
         $this->queue = $queue;
+    }
+
+    private static function filterOldItems(array $input, int $thresh = 15 * MINUTE_IN_SECONDS): array
+    {
+        $output = [];
+
+        foreach ($input as $item) {
+            $timestamp = date_create_from_format('Y-m-d\TH:i:sO', $item['timestamp'] ?? '');
+            if ($timestamp && (time() - $timestamp->getTimestamp() > $thresh)) {
+                $output[] = $item;
+            }
+        }
+
+        return $output;
+    }
+
+    private static function mergeParams(string|array ...$args): string
+    {
+        $arrays = array_merge(
+            ...array_map(fn($arg) => wp_parse_args($arg), $args)
+        );
+
+        return http_build_query($arrays);
     }
 }

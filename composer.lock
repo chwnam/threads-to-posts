@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "230c1eebaee7537d3fa54a48fb08bcf3",
+    "content-hash": "7ba7ab9e6e730275714ccf585e4ae5ac",
     "packages": [
         {
             "name": "bojaghi/admin-ajax",
@@ -57,16 +57,16 @@
         },
         {
             "name": "bojaghi/continy",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bojaghi/continy.git",
-                "reference": "451bdba09c1e72956298a151cd16b63d6dedabff"
+                "reference": "598fc3375339a1a2dd636c06175558fbd2026b9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bojaghi/continy/zipball/451bdba09c1e72956298a151cd16b63d6dedabff",
-                "reference": "451bdba09c1e72956298a151cd16b63d6dedabff",
+                "url": "https://api.github.com/repos/bojaghi/continy/zipball/598fc3375339a1a2dd636c06175558fbd2026b9f",
+                "reference": "598fc3375339a1a2dd636c06175558fbd2026b9f",
                 "shasum": ""
             },
             "require": {
@@ -98,9 +98,9 @@
             "homepage": "https://github.com/bojaghi/continy",
             "support": {
                 "issues": "https://github.com/bojaghi/continy/issues",
-                "source": "https://github.com/bojaghi/continy/tree/1.1.2"
+                "source": "https://github.com/bojaghi/continy/tree/1.1.3"
             },
-            "time": "2025-04-19T07:51:23+00:00"
+            "time": "2025-04-19T09:13:38+00:00"
         },
         {
             "name": "bojaghi/contract",
@@ -2469,7 +2469,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0"
+        "php": ">=8.0",
+        "ext-pcntl": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"

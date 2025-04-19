@@ -6,7 +6,6 @@ use Bojaghi\Contract\Support;
 use Chwnam\ThreadsToPosts\Modules\Options;
 use Chwnam\ThreadsToPosts\Supports\Threads\Authorization;
 use Exception;
-use JetBrains\PhpStorm\NoReturn;
 
 class TokenSupport implements Support
 {
@@ -20,22 +19,19 @@ class TokenSupport implements Support
     }
 
     /**
-     * Step 1: User make a request to authorize to Threads.
+     * Step 1: User makes a request to authorize to Threads.
      *
-     * @return void
+     * @return string
      */
-    #[NoReturn]
-    public function request(): void
+    public function getAuthorization(): string
     {
-        // Redirect to Threads and stop.
-        wp_redirect($this->auth->getRequestUri());
-        exit;
+        return $this->auth->getRequestUri();
     }
 
     /**
      * Step 2: Threads redirects user to our site with 'code'.
-     *         Exchange code with short-lived access token.
-     *         Exchange short-lived access token with long-lived access token.
+     *         Exchange code with a short-lived access token.
+     *         Exchange a short-lived access token with a long-lived access token.
      *
      * @return void
      */
@@ -43,8 +39,9 @@ class TokenSupport implements Support
     {
         try {
             $shortLivedToken = $this->auth->exchangeCodeWithAccessToken();
-            $longLivedToken  = $this->auth->exchangeWithLongLivedToken($shortLivedToken['access_token']);
+            sleep(2);
 
+            $longLivedToken            = $this->auth->exchangeWithLongLivedToken($shortLivedToken['access_token']);
             $longLivedToken['user_id'] = $shortLivedToken['user_id'];
 
             $this->options->ttp_token->update($longLivedToken);
@@ -57,16 +54,15 @@ class TokenSupport implements Support
     public function refreshLongLivedToken(): void
     {
         try {
-            $token     = $this->options->ttp_token->get();
-            $refreshed = $this->auth->refreshLongLivedToken($token['access_token']);
-
+            $token                = $this->options->ttp_token->get();
+            $refreshed            = $this->auth->refreshLongLivedToken($token['access_token']);
             $refreshed['user_id'] = $token['user_id'];
 
             $this->options->ttp_token->update($refreshed);
         } catch (Exception $e) {
             wp_die($e->getMessage());
         }
-        // Refresh can be done by WP-cron. You cannot use redirection here.
+        // WP-cron may use this method. You cannot use redirection here.
     }
 
     public function checkLongLiveTokenRefreshRequired(): bool
@@ -80,7 +76,11 @@ class TokenSupport implements Support
             return false;
         }
 
-        return time() > ($timestamp + $expiresIn - self::TIME_THRESH);
+        $now        = time();
+        $expiration = $timestamp + $expiresIn;
+        $threshold  = $expiration - self::TIME_THRESH;
+
+        return $threshold < $now && $now < $expiration;
     }
 
     public static function getRedirectionCallbackUrl(): string

@@ -29,6 +29,28 @@ class CliHandler implements Module
     }
 
     /**
+     * Get the access token
+     *
+     * @subcommand access-token
+     *
+     * @return void
+     * @throws ExitException
+     */
+    public function accessToken(): void
+    {
+        $token       = ttpGetToken();
+        $accessToken = $token->access_token;
+        $userId      = $token->user_id;
+
+        if ($token) {
+            WP_CLI::line('Access Token: ' . PHP_EOL . $accessToken);
+            WP_CLI::line('User ID: ' . PHP_EOL . $userId);
+        } else {
+            WP_CLI::error('No access token found.');
+        }
+    }
+
+    /**
      * Add a task to the queue.
      *
      * ## OPTIONS
@@ -60,6 +82,51 @@ class CliHandler implements Module
     }
 
     /**
+     * Prepare Threads posts scan and scrap.
+     *
+     * Clear current queue and add {heavy,light}-scrap.
+     *
+     * ## OPTIONS
+     * [--yes]: Do not ask
+     * [--heavy]: Defaults to light-scrap. Use this switch to perform heavy-scrap.
+     *
+     * If it is light-scrap:
+     * - Only fetch the first threads page, maximum 25.
+     * - Only fetch the first conversations page.
+     * - Save only posts and replies older than 15 minutes.
+     * - Save replies only by you, replied to only yours.
+     *
+     * If it is heavy-scrap:
+     * - All posts in all pages, all my replies that are replied to yours are scanned.
+     * - Timestamp is not considered.
+     *
+     * ## EXAMPLES
+     * wp ttp scrap
+     * wp ttp scrap --heavy
+     * wp ttp scrap --heavy --yes
+     *
+     * @param $_
+     * @param $kwargs
+     *
+     * @return void
+     */
+    public function scrap($_, $kwargs): void
+    {
+        $type = isset($kwargs['heavy']) ? 'heavy' : 'light';
+        $yes  = isset($kwargs['yes']) && $kwargs['yes'];
+        if (!$yes) {
+            WP_CLI::confirm('Queue will be cleared. Are you sure?', $kwargs);
+        }
+
+        $queue = $this->runner->getQueue();
+        $queue->clear();
+        $queue->push("$type-scrap");
+        $queue->save();
+
+        WP_CLI::success('Queue initialized. Run `wp ttp run` to start.');
+    }
+
+    /**
      * Get information of my account
      *
      * @return void
@@ -67,35 +134,9 @@ class CliHandler implements Module
      */
     public function me(): void
     {
-        $api = ttpGetApi();
+        $api    = ttpGetApi();
         $result = $api->getMe(['fields' => UserFields::getFields(Fields::ALL)]);
         print_r($result);
-    }
-
-    /**
-     * Initialization.
-     *
-     * Clear the queue and add t:scan
-     *
-     * ## OPTIONS
-     *
-     * [--yes]: Do not ask
-     *
-     * @param $args
-     * @param $kwargs
-     *
-     * @return void
-     */
-    public function init($args, $kwargs): void
-    {
-        WP_CLI::confirm('Queue will be cleared. Are you sure?', $kwargs);
-
-        $queue = $this->runner->getQueue();
-        $queue->clear();
-        $queue->push('t:scan');
-        $queue->save();
-
-        WP_CLI::success('Queue initialized. Run `wp ttp run` to start.');
     }
 
     /**
@@ -192,28 +233,6 @@ class CliHandler implements Module
     }
 
     /**
-     * Get the access token
-     *
-     * @subcommand access-token
-     *
-     * @return void
-     * @throws ExitException
-     */
-    public function accessToken(): void
-    {
-        $token       = ttpGetToken();
-        $accessToken = $token->access_token;
-        $userId      = $token->user_id;
-
-        if ($token) {
-            WP_CLI::line('Access Token: ' . PHP_EOL . $accessToken);
-            WP_CLI::line('User ID: ' . PHP_EOL . $userId);
-        } else {
-            WP_CLI::error('No access token found.');
-        }
-    }
-
-    /**
      * Import queue status from a file.
      *
      * ## OPTIONS
@@ -289,6 +308,7 @@ class CliHandler implements Module
             $this->runner->getQueue()->push($this->runner->getTask(), true);
             $this->runner->getQueue()->save();
             WP_CLI::success('Run terminated by Ctrl+C.');
+            exit;
         };
 
         pcntl_async_signals(true);
@@ -297,38 +317,6 @@ class CliHandler implements Module
         $this->runner->run($kwargs);
 
         WP_CLI::success('Run finished.');
-    }
-
-    public function test(): void
-    {
-        $callback = function ($signal) {
-            echo "Signal $signal received. Ok I'll let you go.";
-            exit;
-        };
-
-        pcntl_async_signals(true);
-        pcntl_signal(SIGINT, $callback);
-
-        while (true) {
-            echo "I won't let you go.\n";
-            sleep(3);
-        }
-    }
-
-    #[NoReturn]
-    public function shutdown(): void
-    {
-        WP_CLI::line('Received SIGINT. Shutting down.');
-
-        $queue = $this->runner->getQueue();
-        $task  = $this->runner->getTask();
-
-        if ($task !== $queue->peek()) {
-            $queue->push($task, true);
-        }
-
-        $this->runner->getQueue()->save();
-        exit;
     }
 
     /**

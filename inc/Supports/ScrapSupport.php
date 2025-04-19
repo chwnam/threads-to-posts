@@ -101,7 +101,7 @@ class ScrapSupport implements Support
         $filtered = [];
 
         foreach ($conversations as $c) {
-            $repliedTo = $c['replied_to']['id'];
+            $repliedTo = $c['replied_to']['id'] ?? false;
             if (isset($myOwn[$repliedTo])) {
                 $filtered[] = $c;
             }
