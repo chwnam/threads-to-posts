@@ -289,6 +289,7 @@ class CliHandler implements Module
             $this->runner->getQueue()->push($this->runner->getTask(), true);
             $this->runner->getQueue()->save();
             WP_CLI::success('Run terminated by Ctrl+C.');
+            exit;
         };
 
         pcntl_async_signals(true);

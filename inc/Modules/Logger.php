@@ -12,7 +12,7 @@ class Logger implements Module
 {
     private MonologLogger $logger;
 
-    public function __construct(string|Level $logLevel = Level::Debug)
+    public function __construct(string|Level $logLevel = Level::Info)
     {
         $logLevel = MonologLogger::toMonologLevel($logLevel);
 
