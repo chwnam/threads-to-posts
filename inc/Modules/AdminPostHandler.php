@@ -9,7 +9,7 @@ use function Chwnam\ThreadsToPosts\ttpCall;
 class AdminPostHandler implements Module
 {
     /**
-     * @uses TokenSupport::request()
+     * @uses TokenSupport::getAuthorization()
      * @uses TokenSupport::redirectionCallback()
      */
     public function accessToken(): void
@@ -17,7 +17,8 @@ class AdminPostHandler implements Module
         $step = sanitize_key($_GET['step'] ?? '');
 
         if (empty($step) && wp_verify_nonce($_GET['nonce'] ?? '', '_ttp_access_token')) {
-            ttpCall(TokenSupport::class, 'request');
+            wp_redirect(ttpCall(TokenSupport::class, 'getAuthorization'));
+            exit;
         }
 
         if ('redirect' == $step) {
