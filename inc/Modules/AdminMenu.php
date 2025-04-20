@@ -27,6 +27,10 @@ class AdminMenu implements Module
         }
 
         switch ($_GET['tab'] ?? '') {
+            case 'scrap':
+                wp_enqueue_style('ttp-scrap');
+                break;
+
             case 'tester':
                 wp_enqueue_style('ttp-tester');
                 break;

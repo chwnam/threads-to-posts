@@ -99,11 +99,22 @@ function ttpGetLogger(): Logger
  *
  * @return object{
  *     enable_tester: boolean,
+ *     enable_dump: boolean,
  * }
  */
 function ttpGetMisc(): object
 {
     return (object)ttpGet(Options::class)->ttp_misc->get();
+}
+
+/**
+ * Get scrap mode
+ *
+ * @return string
+ */
+function ttpGetScrapMode(): string
+{
+    return ttpGet(Options::class)->ttp_scrap_mode->get();
 }
 
 function ttpGetTemplate(): Template
@@ -147,4 +158,25 @@ function ttpPostPermalink(WP_Post $post): string
     $shortcode = $post->post_title;
 
     return "https://www.threads.net/@$userName/post/$shortcode";
+}
+
+function ttpGetUploadsDir(string $relativeDir, bool $createHtAccess = true): string
+{
+    $relativeDir = trim($relativeDir, '/\\');
+
+    $d   = wp_upload_dir();
+    $dir = path_join($d['basedir'], $relativeDir);
+
+    if (!file_exists($dir)) {
+        mkdir($dir, 0777, true);
+        if($createHtAccess) {
+            $fp = @fopen($dir . '/.htaccess', 'w');
+            if ($fp) {
+                fwrite($fp, "Deny from all\n");
+            }
+            fclose($fp);
+        }
+    }
+
+    return $dir;
 }

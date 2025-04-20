@@ -3,8 +3,10 @@
 namespace Chwnam\ThreadsToPosts\Modules;
 
 use Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Supports\TokenSupport;
 use function Chwnam\ThreadsToPosts\ttpCall;
+use function Chwnam\ThreadsToPosts\ttpGet;
 
 class AdminPostHandler implements Module
 {
@@ -32,6 +34,7 @@ class AdminPostHandler implements Module
 
     /**
      * @param Options $options
+     *
      * @return void
      */
     public function deleteToken(Options $options): void
@@ -48,6 +51,54 @@ class AdminPostHandler implements Module
     public function forceRefreshToken(): void
     {
         ttpCall(TokenSupport::class, 'refreshLongLivedToken');
+        wp_redirect(wp_get_referer());
+    }
+
+    /**
+     * @return void
+     */
+    public function updateScrapMode(): void
+    {
+        if (!current_user_can('manage_options')) {
+            wp_die('You are not allowed to do this action.');
+        }
+
+        $value = sanitize_key($_REQUEST['ttp_scrap_mode'] ?? '');
+        ttpGet(Options::class)->ttp_scrap_mode->update($value);
+        // Clear staged timestamp.
+        CronHandler::clearStaged();
+
+        // Set cron schedule.
+        switch ($value) {
+            case '':
+                wp_clear_scheduled_hook('ttp_cron_scrap');
+                break;
+
+            case 'light':
+                wp_clear_scheduled_hook('ttp_cron_scrap');
+                wp_schedule_event(
+                    timestamp:  time(),
+                    recurrence: 'ttp_scrap_schedule',
+                    hook:       'ttp_cron_scrap',
+                );
+                break;
+
+            case 'heavy':
+                $runner = ttpGet(TaskRunner::class);
+                $queue  = $runner->getQueue();
+                $queue->clear();
+                $queue->push('heavy-scrap');
+                $queue->save();
+
+                wp_clear_scheduled_hook('ttp_cron_scrap');
+                wp_schedule_event(
+                    timestamp:  time(),
+                    recurrence: 'ttp_scrap_schedule',
+                    hook:       'ttp_cron_scrap',
+                );
+                break;
+        }
+
         wp_redirect(wp_get_referer());
     }
 }

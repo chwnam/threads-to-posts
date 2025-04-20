@@ -39,17 +39,20 @@ class SimpleTaskRunner implements TaskRunner, Support
 
     private string $task;
 
+    private ?array $lastResult;
+
     public function __construct(Api $api, LoggerModule $logger, TaskQueue $queue, ScrapSupport $scrap)
     {
-        $this->api     = $api;
-        $this->logger  = $logger->get();
-        $this->forever = false;
-        $this->maxTask = 0;
-        $this->numTask = 0;
-        $this->queue   = $queue;
-        $this->scrap   = $scrap;
-        $this->sleep   = 0;
-        $this->task    = '';
+        $this->api        = $api;
+        $this->logger     = $logger->get();
+        $this->forever    = false;
+        $this->maxTask    = 0;
+        $this->numTask    = 0;
+        $this->queue      = $queue;
+        $this->scrap      = $scrap;
+        $this->sleep      = 0;
+        $this->task       = '';
+        $this->lastResult = null;
     }
 
     /**
@@ -65,17 +68,30 @@ class SimpleTaskRunner implements TaskRunner, Support
     public function run(array|string $args = ''): void
     {
         $defaults = [
-            'forever'  => false,
-            'max_task' => 25,
-            'sleep'    => 2,
+            'enable_dump' => false,
+            'dump_path'   => '',
+            'forever'     => false,
+            'max_task'    => 25,
+            'sleep'       => 2,
         ];
 
         $args = wp_parse_args($args, $defaults);
 
-        $this->forever = (bool)$args['forever'];
-        $this->maxTask = max(0, (int)$args['max_task']);
-        $this->numTask = 0;
-        $this->sleep   = max(1, (int)$args['sleep']);
+        $enableDump = (bool)$args['enable_dump'];
+        $dumpPath   = $args['dump_path'] ?? false;
+
+        $dumpPathValid = $dumpPath && file_exists($dumpPath) &&
+            is_dir($dumpPath) && is_writable($dumpPath) && is_executable($dumpPath);
+
+        if ($enableDump && !$dumpPathValid) {
+            $enableDump = false;
+        }
+
+        $this->forever    = (bool)$args['forever'];
+        $this->maxTask    = max(0, (int)$args['max_task']);
+        $this->numTask    = 0;
+        $this->sleep      = max(1, (int)$args['sleep']);
+        $this->lastResult = null;
 
         while ($this->queue->size() > 0 && ($this->forever || $this->numTask < $this->maxTask)) {
             $this->task = $this->queue->pop();
@@ -94,6 +110,12 @@ class SimpleTaskRunner implements TaskRunner, Support
 
             $result = $this->_doTask($this->task);
             if ($result) {
+                if ($enableDump && $this->lastResult) {
+                    $fileName = $dumpPath . "/$this->task.json";
+                    $encoded  = json_encode($this->lastResult, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                    file_put_contents($fileName, $encoded);
+                    $this->lastResult = null;
+                }
                 $this->logger->info(sprintf('Task %s is successful.', $this->task));
             } else {
                 // Fail count?
@@ -164,7 +186,7 @@ class SimpleTaskRunner implements TaskRunner, Support
         // In normal intent, threads posts earlier than 15 minutes are skipped.
         // We assume that timestamp field always exists and is valid.
         if ('' === $intent) {
-            $data = self::filterOldItems($data);
+            $data = $this->filterLightScrapItems($data);
         }
 
         foreach ($data as $item) {
@@ -177,7 +199,65 @@ class SimpleTaskRunner implements TaskRunner, Support
             $this->queue->push("t$intent::$newParams", true);
         }
 
+        $this->lastResult = $result;
+
         return true;
+    }
+
+    private function filterLightScrapItems(array $input): array
+    {
+        global $wpdb;
+
+        $output = [];
+        $thresh = 15 * MINUTE_IN_SECONDS;
+
+        /**
+         * Threads posts already posted.
+         *
+         * @var array<string, array{threads_id: int, post_id: int}> $posted
+         */
+        $posted = [];
+
+        $postNames = array_map(fn($item) => 'ttp-' . $item['id'], $input);
+        if ($postNames) {
+            $placeholder = array_pad([], count($postNames), '%s');
+            $placeholder = implode(',', $placeholder);
+            $query       = $wpdb->prepare(
+                "SELECT CAST(SUBSTR(post_name, 5) AS INT) AS threads_id, ID as post_id FROM $wpdb->posts " .
+                " WHERE post_type='ttp_threads' AND post_status='publish' AND post_name IN ($placeholder)",
+                $postNames
+            );
+
+            $posted = $wpdb->get_results($query, OBJECT_K);
+        }
+
+        foreach ($input as $item) {
+            // Skip already posted.
+            if (isset($posted[$item['id']])) {
+                $this->logger->debug(sprintf("Threads post %s is already posted.", $item['id']));
+                continue;
+            }
+
+            // Skip threads posts earlier than the given threshold value.
+            $timestamp = date_create_from_format('Y-m-d\TH:i:sO', $item['timestamp'] ?? '');
+            if (!$timestamp || (time() - $timestamp->getTimestamp() < $thresh)) {
+                $this->logger->debug(sprintf("Threads post %s is not older than 15 minutes.", $item['id']));
+                continue;
+            }
+
+            $output[] = $item;
+        }
+
+        return $output;
+    }
+
+    private static function mergeParams(string|array ...$args): string
+    {
+        $arrays = array_merge(
+            ...array_map(fn($arg) => wp_parse_args($arg), $args)
+        );
+
+        return http_build_query($arrays, encoding_type: 0);
     }
 
     /**
@@ -185,13 +265,34 @@ class SimpleTaskRunner implements TaskRunner, Support
      */
     private function _scrapThreadSingle(string $threadsId, string $params, string $intent): bool
     {
+        $params = self::expandFields($params, PostFields::class);
         $params = self::mergeParams($params, ['fields' => PostFields::getFields(Fields::ALL)]);
-        $data   = $this->api->getUserSingleThread($threadsId, $params);
+        $result = $this->api->getUserSingleThread($threadsId, $params);
 
-        $this->scrap->updateThreadsMedia($data);
-        $this->queue->push("c$intent:$threadsId:fields=" . ConversationsFields::getFields(Fields::ALL));
+        $this->scrap->updateThreadsMedia($result);
+        $this->queue->push("c$intent:$threadsId:fields=_all_");
+
+        $this->lastResult = $result;
 
         return true;
+    }
+
+    /**
+     * @param string $params
+     * @param string $class
+     *
+     * @return string
+     */
+    private static function expandFields(string $params, string $class): string
+    {
+        $parsed = wp_parse_args($params);
+
+        if ('_all_' === ($parsed['fields'] ?? '') && is_callable([$class, 'getFields'])) {
+            $parsed['fields'] = $class::getFields(Fields::ALL);
+            return http_build_query($parsed, encoding_type: 0);
+        }
+
+        return $params;
     }
 
     /**
@@ -199,6 +300,7 @@ class SimpleTaskRunner implements TaskRunner, Support
      */
     private function _scrapConverastions(string $threadsId, string $params, string $intent): bool
     {
+        $params  = self::expandFields($params, ConversationsFields::class);
         $result  = $this->api->getMediaConversation($threadsId, $params);
         $data    = $result['data'] ?? [];
         $hasNext = isset($result['paging']['next']);
@@ -207,7 +309,7 @@ class SimpleTaskRunner implements TaskRunner, Support
         // In normal intent, threads replies earlier than 15 minutes are skipped.
         // We assume that timestamp field always exists and is valid.
         if ('' === $intent) {
-            $data = self::filterOldItems($data);
+            $data = $this->filterLightScrapItems($data);
         }
 
         $this->scrap->updateConversations($data);
@@ -217,6 +319,8 @@ class SimpleTaskRunner implements TaskRunner, Support
             $newParams = self::mergeParams($params, ['after' => $after]);
             $this->queue->push("c$intent:$threadsId:$newParams");
         }
+
+        $this->lastResult = $result;
 
         return true;
     }
@@ -235,28 +339,5 @@ class SimpleTaskRunner implements TaskRunner, Support
     public function setQueue(TaskQueue $queue): void
     {
         $this->queue = $queue;
-    }
-
-    private static function filterOldItems(array $input, int $thresh = 15 * MINUTE_IN_SECONDS): array
-    {
-        $output = [];
-
-        foreach ($input as $item) {
-            $timestamp = date_create_from_format('Y-m-d\TH:i:sO', $item['timestamp'] ?? '');
-            if ($timestamp && (time() - $timestamp->getTimestamp() > $thresh)) {
-                $output[] = $item;
-            }
-        }
-
-        return $output;
-    }
-
-    private static function mergeParams(string|array ...$args): string
-    {
-        $arrays = array_merge(
-            ...array_map(fn($arg) => wp_parse_args($arg), $args)
-        );
-
-        return http_build_query($arrays);
     }
 }

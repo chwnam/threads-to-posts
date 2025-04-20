@@ -28,6 +28,9 @@ class ActivationDeactivation implements Module
         foreach (self::getCustomPostCaps() as $cap) {
             $admin->remove_cap($cap);
         }
+
+        // Remove dynamically set schedule.
+        wp_clear_scheduled_hook('ttp_cron_scrap');
     }
 
     /**

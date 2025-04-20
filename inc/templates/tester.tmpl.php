@@ -6,13 +6,16 @@ use Bojaghi\Template\Template;
  * @var Template $this
  *
  * Context:
+ * - status: string
  */
 ?>
 
-<div class="wrap">
-    <h1>Tester</h1>
-    <hr class="wp-header-end">
-
+<?php
+$this
+    ->extends('token-status-required')
+    ->assign('title', 'API Tester')
+    ->start('okay');
+?>
     <div id="ttp-tester-posts" class="ttp-tester">
         <h3>Retrieve Posts from Threads</h3>
         <pre id="ttp-posts-response" class="ttp-raw_output"></pre>
@@ -76,4 +79,5 @@ use Bojaghi\Template\Template;
             </div>
         </div>
     </div>
-</div>
+<?php
+$this->end();

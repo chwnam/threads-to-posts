@@ -72,7 +72,7 @@ class TokenSupport implements Support
         $expiresIn   = $token['expires_in'] ?? 0;
         $timestamp   = $token['timestamp'] ?? 0;
 
-        if (!($accessToken && $expiresIn && $timestamp)) {
+        if (!$accessToken || !$expiresIn || !$timestamp) {
             return false;
         }
 
@@ -80,7 +80,7 @@ class TokenSupport implements Support
         $expiration = $timestamp + $expiresIn;
         $threshold  = $expiration - self::TIME_THRESH;
 
-        return $threshold < $now && $now < $expiration;
+        return $threshold < $now;
     }
 
     public static function getRedirectionCallbackUrl(): string

@@ -81,12 +81,12 @@ class OptionTaskQueue implements TaskQueue, Support
 
     public function save(): void
     {
-        set_transient($this->queueNaee, implode(',', $this->export()));
+        set_site_transient($this->queueNaee, implode("\n", $this->export()));
     }
 
     public function load(): void
     {
-        $this->import(explode(',', get_transient($this->queueNaee) ?: ''));
+        $this->import(explode("\n", get_site_transient($this->queueNaee) ?: ''));
     }
 
     private static function filterTask(array $tasks): array

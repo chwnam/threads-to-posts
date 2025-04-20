@@ -17,6 +17,7 @@ return [
      * @uses AdminPostHandler::accessToken()
      * @uses AdminPostHandler::deleteToken()
      * @uses AdminPostHandler::forceRefreshToken()
+     * @uses AdminPostHandler::updateScrapMode()
      */
     [
         'ttp_access_token',                 // action
@@ -45,6 +46,17 @@ return [
         'ttp/adminPostHandler@deleteToken', // callback
         SubmitBase::ONLY_PRIV,              // logged-in user only
         '_ttp_delete_token'                 // Automatic nonce check
+        // default priority
+    ],
+
+    /**
+     * Scrap mode change
+     */
+    [
+        'ttp_update_scrap_mode',                // action
+        'ttp/adminPostHandler@updateScrapMode', // callback
+        SubmitBase::ONLY_PRIV,                  // logged-in user only
+        '_ttp_update_scrap_mode'                // Automatic nonce check
         // default priority
     ],
 ];

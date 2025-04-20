@@ -1,0 +1,19 @@
+.ttp-scrap.ttp-scrap-okay legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 1em 0 0.5em;
+}
+
+.ttp-scrap.ttp-scrap-okay ul {
+    line-height: 1.6em;
+    margin-left: 1em;
+    margin-top: 0.5em;
+}
+
+.ttp-scrap.ttp-scrap-okay ul > li {
+    font-size: 1.1em;
+}
+
+.ttp-scrap label {
+    cursor: pointer;
+}

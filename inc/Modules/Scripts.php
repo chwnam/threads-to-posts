@@ -41,6 +41,16 @@ class Scripts implements Module
                     'strategy'  => 'defer',
                     'in_footer' => true,
                 ],
+            ],
+            [
+                'handle' => 'ttp-scrap',
+                'src'    => plugins_url('assets/scrap.js', TTP_MAIN),
+                'deps'   => ['jquery'],
+                'ver'    => TTP_VERSION,
+                'args'   => [
+                    'strategy'  => 'defer',
+                    'in_footer' => true,
+                ],
             ]
         ];
 
@@ -70,6 +80,12 @@ class Scripts implements Module
     private function registerStyles(): void
     {
         $items = [
+            [
+                'handle' => 'ttp-scrap',
+                'src'    => plugins_url('assets/scrap.css', TTP_MAIN),
+                'deps'   => [],
+                'ver'    => TTP_VERSION,
+            ],
             [
                 'handle' => 'ttp-settings',
                 'src'    => plugins_url('assets/settings.css', TTP_MAIN),

@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 
 return [
     // key => option
-    'ttp_auth' => [
+    'ttp_auth'       => [
         'type'              => 'array',
         'group'             => 'ttp-options',
         'description'       => 'App ID, and App secret',
@@ -22,10 +22,50 @@ return [
         'autoload'          => false,
         'get_filter'        => null,
     ],
-
-    'ttp_token' => [
+    'ttp_misc'       => [
         'type'              => 'array',
         'group'             => 'ttp-options',
+        'description'       => 'Miscellaneous options.',
+        'sanitize_callback' => function ($value): array {
+            return [
+                'enable_tester' => filter_var($value['enable_tester'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'enable_dump'   => filter_var($value['enable_dump'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            ];
+        },
+        'show_in_rest'      => false,
+        'default'           => [
+            'enable_tester' => false,
+            'enable_dump'   => false,
+        ],
+        'autoload'          => false,
+        'get_filter'        => null,
+    ],
+    'ttp_scrap_mode' => [
+        'type'              => 'string',
+        'group'             => 'ttp-options',
+        'description'       => 'Scrap mode',
+        'sanitize_callback' => function ($value): string {
+            $modes = [
+                '',      // Empty string: disabled. Default.
+                'light', // Light scrap mode.
+                'heavy', // Heavy scrap mode.
+            ];
+
+            $sanitized = sanitize_text_field($value);
+            if (!in_array($sanitized, $modes, true)) {
+                $sanitized = '';
+            }
+
+            return $sanitized;
+        },
+        'show_in_rest'      => false,
+        'default'           => '',
+        'autoload'          => true,
+        'get_filter'        => null,
+    ],
+    'ttp_token'      => [
+        'type'              => 'array',
+        'group'             => 'ttp-secret-data', // **NOT** a part of ttp-options group.
         'description'       => 'Authorization token from Threads. Must be a long-lived token.',
         'sanitize_callback' => function ($value): array {
             return [
@@ -43,23 +83,6 @@ return [
             'expires_in'   => 0,
             'timestamp'    => 0,
             'user_id'      => '',
-        ],
-        'autoload'          => false,
-        'get_filter'        => null,
-    ],
-
-    'ttp_misc' => [
-        'type'              => 'array',
-        'group'             => 'ttp-options',
-        'description'       => 'Miscellaneous options.',
-        'sanitize_callback' => function ($value): array {
-            return [
-                'enable_tester' => filter_var($value['enable_tester'] ?? false, FILTER_VALIDATE_BOOLEAN),
-            ];
-        },
-        'show_in_rest'      => false,
-        'default'           => [
-            'enable_tester' => false
         ],
         'autoload'          => false,
         'get_filter'        => null,

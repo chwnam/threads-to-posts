@@ -43,7 +43,7 @@ return [
         'bojaghi/adminPost'    => AdminPost::class,
         'bojaghi/cpt'          => CustomPosts::class,
         'bojaghi/cron'         => Cron\Cron::class,
-        'bojaghi/cronSchedule' => Cron\CronSchedule::class,
+        'bojachi/cronSched'    => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
         'ttp/actvDctv'         => Modules\ActivationDeactivation::class,
         'ttp/adminAjaxHandler' => Modules\AdminAjaxHandler::class,
@@ -77,7 +77,7 @@ return [
         ],
         'bojaghi/cpt'                         => dirname(TTP_MAIN) . '/conf/cpt-setup.php',
         'bojaghi/cron'                        => dirname(TTP_MAIN) . '/conf/cron-setup.php',
-        'bojaghi/cronSchedule'                => dirname(TTP_MAIN) . '/conf/cron-schedule-setup.php',
+        'bojachi/cronSched'                   => dirname(TTP_MAIN) . '/conf/cron-sched-setup.php',
         'bojaghi/template'                    => [
             [
                 'infix'  => 'tmpl',
@@ -86,14 +86,17 @@ return [
         ],
 
         // TTP module arguments
+        'ttp/logger'                          => [
+            'logLevel' => defined('WP_DEBUG') && WP_DEBUG ? 'debug' : 'info',
+        ],
         'ttp/options'                         => dirname(TTP_MAIN) . '/conf/options-setup.php',
 
         // Supports arguments
         Supports\Threads\Api::class           => function (): array {
-            $value = ttpGetToken();
+            $token = ttpGetToken();
             return [
-                'accessToken' => $value->access_token,
-                'userId'      => $value->user_id,
+                'accessToken' => $token->access_token,
+                'userId'      => $token->user_id,
             ];
         },
         Supports\OptionTaskQueue::class       => function (): array {
@@ -120,9 +123,8 @@ return [
     'modules'   => [
         '_'    => [
             'bojaghi/cron',
-            'bojaghi/cronSchedule',
+            'bojachi/cronSched',
             'ttp/actvDctv',
-            'ttp/cronHandler',
             function () {
                 if ('cli' === php_sapi_name() && (defined('WP_CLI') && WP_CLI)) {
                     \WP_CLI::add_command('ttp', CliHandler::class);
@@ -130,6 +132,9 @@ return [
             }
         ],
         'init' => [
+            Continy::PR_HIGH    => [
+                'ttp/options',
+            ],
             Continy::PR_DEFAULT => [
                 // Bojaghi
                 'bojaghi/adminAjax',
@@ -138,7 +143,7 @@ return [
                 // TTP
                 'ttp/adminEdit',
                 'ttp/adminMenu',
-                'ttp/options',
+                'ttp/cronHandler',
                 'ttp/scripts'
             ],
         ],

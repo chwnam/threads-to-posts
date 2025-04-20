@@ -221,11 +221,32 @@ class SettingsPage implements Support
             page:    'ttp-settings',
             section: 'ttp-misc',
             args:    [
-                         'label_for' => 'ttp-show_tester',
+                         'label_for' => 'ttp-enable_tester',
                          'name'      => $name,
                          'value'     => $value,
                      ],
         );
 
+        add_settings_field(
+            id:      'ttp-enable_dump',
+            title:   'Enable API Dump',
+            callback: function (array $args): void {
+                echo R::checkbox(
+                    label:   'Every API call result is storead is .json file.',
+                    checked: $args['value']['enable_dump'] ?? false,
+                    attrs:   [
+                                 'id'   => $args['label_for'],
+                                 'name' => $args['name'] . '[enable_dump]',
+                             ]
+                );
+            },
+            page:    'ttp-settings',
+            section: 'ttp-misc',
+            args:    [
+                         'label_for' => 'ttp-enable_dump',
+                         'name'      => $name,
+                         'value'     => $value,
+                     ],
+        );
     }
 }

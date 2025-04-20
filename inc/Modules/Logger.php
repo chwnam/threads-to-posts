@@ -7,6 +7,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger as MonologLogger;
+use function Chwnam\ThreadsToPosts\ttpGetUploadsDir;
 
 class Logger implements Module
 {
@@ -35,20 +36,8 @@ class Logger implements Module
         return $this->logger;
     }
 
-    private static function getLogPath(): string
+    public static function getLogPath(): string
     {
-        $d   = wp_upload_dir();
-        $dir = "{$d['basedir']}/threads-to-posts";
-
-        if (!file_exists($dir)) {
-            mkdir($dir, 0777, true);
-            $fp = @fopen($dir . '/.htaccess', 'w');
-            if ($fp) {
-                fwrite($fp, "Deny from all\n");
-            }
-            fclose($fp);
-        }
-
-        return "$dir/ttp.log";
+        return ttpGetUploadsDir('threads-to-posts') . '/threads-to-posts.log';
     }
 }

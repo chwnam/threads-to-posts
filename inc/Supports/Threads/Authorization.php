@@ -2,11 +2,14 @@
 
 namespace Chwnam\ThreadsToPosts\Supports\Threads;
 
-use Bojaghi\Contract\Support;
 use Exception;
+use Monolog\Logger;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
 
 class Authorization extends ApiBase
 {
+    private Logger $logger;
+
     /**
      * Constroctor
      *
@@ -26,6 +29,7 @@ class Authorization extends ApiBase
         private string $deleteCallbackUrl,
     )
     {
+        $this->logger = ttpGetLogger();
     }
 
     /**
@@ -97,6 +101,8 @@ class Authorization extends ApiBase
             ]
         );
 
+        $this->logger->debug('short-lived token acquired: ' . self::filter($data));
+
         return [
             'access_token' => $data['access_token'],
             'user_id'      => $data['user_id'],
@@ -141,6 +147,8 @@ class Authorization extends ApiBase
 
         $data['timestamp'] = time();
 
+        $this->logger->debug('long-lived token acquired: ' . self::filter($data));
+
         return $data;
     }
 
@@ -154,7 +162,7 @@ class Authorization extends ApiBase
      *     token_type: string,
      *     expires_in: int,
      *     timestamp: int,
- * }
+     * }
      * @throws Exception
      * @link https://developers.facebook.com/docs/threads/get-started/long-lived-tokens#refresh-a-long-lived-token
      */
@@ -171,7 +179,7 @@ class Authorization extends ApiBase
             'https://graph.threads.net/refresh_access_token',
             [
                 'method' => 'GET',
-                'data'   => [
+                'body'   => [
                     'grant_type'   => 'th_refresh_token',
                     'access_token' => $accessToken,
                 ]
@@ -179,6 +187,8 @@ class Authorization extends ApiBase
         );
 
         $data['timestamp'] = time();
+
+        $this->logger->debug('long-lived token refreshed: ' . self::filter($data));
 
         return $data;
     }
@@ -204,5 +214,14 @@ class Authorization extends ApiBase
         delete_transient($key);
 
         return $saved === $value;
+    }
+
+    private static function filter(array $data): string
+    {
+        if (isset($data['access_token'])) {
+            $data['access_token'] = '******';
+        }
+
+        return json_encode($data, JSON_UNESCAPED_SLASHES);
     }
 }
