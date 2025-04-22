@@ -39,20 +39,17 @@ class SimpleTaskRunner implements TaskRunner, Support
 
     private string $task;
 
-    private ?array $lastResult;
-
     public function __construct(Api $api, LoggerModule $logger, TaskQueue $queue, ScrapSupport $scrap)
     {
-        $this->api        = $api;
-        $this->logger     = $logger->get();
-        $this->forever    = false;
-        $this->maxTask    = 0;
-        $this->numTask    = 0;
-        $this->queue      = $queue;
-        $this->scrap      = $scrap;
-        $this->sleep      = 0;
-        $this->task       = '';
-        $this->lastResult = null;
+        $this->api     = $api;
+        $this->logger  = $logger->get();
+        $this->forever = false;
+        $this->maxTask = 0;
+        $this->numTask = 0;
+        $this->queue   = $queue;
+        $this->scrap   = $scrap;
+        $this->sleep   = 0;
+        $this->task    = '';
     }
 
     /**
@@ -68,30 +65,17 @@ class SimpleTaskRunner implements TaskRunner, Support
     public function run(array|string $args = ''): void
     {
         $defaults = [
-            'enable_dump' => false,
-            'dump_path'   => '',
-            'forever'     => false,
-            'max_task'    => 25,
-            'sleep'       => 2,
+            'forever'  => false,
+            'max_task' => 25,
+            'sleep'    => 2,
         ];
 
         $args = wp_parse_args($args, $defaults);
 
-        $enableDump = (bool)$args['enable_dump'];
-        $dumpPath   = $args['dump_path'] ?? false;
-
-        $dumpPathValid = $dumpPath && file_exists($dumpPath) &&
-            is_dir($dumpPath) && is_writable($dumpPath) && is_executable($dumpPath);
-
-        if ($enableDump && !$dumpPathValid) {
-            $enableDump = false;
-        }
-
-        $this->forever    = (bool)$args['forever'];
-        $this->maxTask    = max(0, (int)$args['max_task']);
-        $this->numTask    = 0;
-        $this->sleep      = max(1, (int)$args['sleep']);
-        $this->lastResult = null;
+        $this->forever = (bool)$args['forever'];
+        $this->maxTask = max(0, (int)$args['max_task']);
+        $this->numTask = 0;
+        $this->sleep   = max(1, (int)$args['sleep']);
 
         while ($this->queue->size() > 0 && ($this->forever || $this->numTask < $this->maxTask)) {
             $this->task = $this->queue->pop();
@@ -109,13 +93,8 @@ class SimpleTaskRunner implements TaskRunner, Support
             );
 
             $result = $this->_doTask($this->task);
+
             if ($result) {
-                if ($enableDump && $this->lastResult) {
-                    $fileName = $dumpPath . "/$this->task.json";
-                    $encoded  = json_encode($this->lastResult, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                    file_put_contents($fileName, $encoded);
-                    $this->lastResult = null;
-                }
                 $this->logger->info(sprintf('Task %s is successful.', $this->task));
             } else {
                 // Fail count?
@@ -178,19 +157,25 @@ class SimpleTaskRunner implements TaskRunner, Support
      */
     private function _scrapThreadsList(string $params, string $intent): bool
     {
-        $result  = $this->api->getUserThreads($params);
-        $data    = $result['data'];
-        $hasNext = isset($result['paging']['next']);
-        $after   = $result['paging']['cursors']['after'] ?? '';
+        $result    = $this->api->getUserThreads($params);
+        $wholeData = $result['data'];
+        $hasNext   = isset($result['paging']['next']);
+        $after     = $result['paging']['cursors']['after'] ?? '';
 
         // In normal intent, threads posts earlier than 15 minutes are skipped.
         // We assume that timestamp field always exists and is valid.
-        if ('' === $intent) {
-            $data = $this->filterLightScrapItems($data);
-        }
-
-        foreach ($data as $item) {
+        $filteredData = match ($intent) {
+            '' => $this->filterLightScrapItems($wholeData),
+            'x' => $wholeData,
+            default => [],
+        };
+        // Fetching posts depends on $intent.
+        foreach ($filteredData as $item) {
             $this->queue->push("t$intent:$item[id]:");
+        }
+        // Fetch replies from $wholeData, not filtered.
+        foreach ($wholeData as $item) {
+            $this->queue->push("c$intent:$item[id]:fields=_all_");
         }
 
         // Only eXtended intent wants next pages.
@@ -198,8 +183,6 @@ class SimpleTaskRunner implements TaskRunner, Support
             $newParams = self::mergeParams($params, ['after' => $after]);
             $this->queue->push("t$intent::$newParams", true);
         }
-
-        $this->lastResult = $result;
 
         return true;
     }
@@ -270,9 +253,6 @@ class SimpleTaskRunner implements TaskRunner, Support
         $result = $this->api->getUserSingleThread($threadsId, $params);
 
         $this->scrap->updateThreadsMedia($result);
-        $this->queue->push("c$intent:$threadsId:fields=_all_");
-
-        $this->lastResult = $result;
 
         return true;
     }
@@ -319,8 +299,6 @@ class SimpleTaskRunner implements TaskRunner, Support
             $newParams = self::mergeParams($params, ['after' => $after]);
             $this->queue->push("c$intent:$threadsId:$newParams");
         }
-
-        $this->lastResult = $result;
 
         return true;
     }

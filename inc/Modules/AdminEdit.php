@@ -71,12 +71,12 @@ class AdminEdit implements Module
 
         // Fetch only the topmost posts.
         remove_action('pre_get_posts', [$this, 'editMainQuery']);
-        $callback = function ($where) use (&$callback) {
-            remove_filter('posts_where', $callback);
-            $where .= ' AND post_parent=0';
-            return $where;
-        };
-        add_filter('posts_where', $callback, 10, 2);
+//        $callback = function ($where) use (&$callback) {
+//            remove_filter('posts_where', $callback);
+//            $where .= ' AND post_parent=0';
+//            return $where;
+//        };
+//        add_filter('posts_where', $callback, 10, 2);
 
         // Default order
         $query->set('orderby', 'date');

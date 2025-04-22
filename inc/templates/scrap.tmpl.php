@@ -33,11 +33,11 @@ $this->extends('token-status-required')
                            name="ttp_scrap_mode"
                            value="disabled"
                            type="radio"
-                        <?php checked('' === $this->get('scrap_mode')); ?>>
+                        <?php checked('disabled' === $this->get('scrap_mode')); ?>>
                     <label for="ttp_scrap_mode-disabled">
                         Disabled
                         <?php
-                        echo '' === $this->get('scrap_mode') ?
+                        echo 'disabled' === $this->get('scrap_mode') ?
                             '<span class="current">(current)</span' : '';
                         ?>
                     </label>

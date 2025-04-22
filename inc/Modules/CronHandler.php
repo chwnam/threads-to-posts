@@ -45,8 +45,6 @@ class CronHandler implements Module
 
         $runner    = ttpGet(TaskRunner::class);
         $scrapMode = ttpGetScrapMode();
-        $misc      = ttpGetMisc();
-        $path      = ttpGetUploadsDir("/threads-to-posts/dumps");
 
         $logger->info("Scheduled scrap has started as $scrapMode mode.");
 
@@ -63,22 +61,10 @@ class CronHandler implements Module
              * - 25 single fetches
              * - 25 conversations fetches
              */
-            $runner->run(
-                [
-                    'enable_dump' => $misc->enable_dump ?? false,
-                    'dump_path'   => $path,
-                    'max_task'    => 52,
-                ]
-            );
+            $runner->run(['max_task' => 52]);
         } elseif ('heavy' === $scrapMode) {
             // Heavy does not clear the queue.
-            $runner->run(
-                [
-                    'enable_dump' => $misc->enable_dump ?? false,
-                    'dump_path'   => $path,
-                    'max_task'    => 55,
-                ]
-            );
+            $runner->run(['max_task' => 55]);
         }
 
         $logger->info("Scheduled scrap has finished.");

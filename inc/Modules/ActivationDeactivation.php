@@ -31,6 +31,7 @@ class ActivationDeactivation implements Module
 
         // Remove dynamically set schedule.
         wp_clear_scheduled_hook('ttp_cron_scrap');
+        CronHandler::clearStaged();
     }
 
     /**

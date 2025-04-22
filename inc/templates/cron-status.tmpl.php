@@ -18,15 +18,15 @@ use Bojaghi\Template\Template;
             <ul>
                 <li>
                     <span class="label"
-                          title="When this job is going to be called.">Next Scheduled</span><?php echo esc_html(
-                        wp_date('Y-m-d H:i:s', $detail['timestamp'])
-                    ); ?>
+                          title="When this job is going to be called.">Next Scheduled</span>
+                    <time datetime="<?php echo esc_attr(wp_date('c', $detail['timestamp'])); ?>">
+                        <?php echo esc_html(wp_date('Y-m-d H:i:s', $detail['timestamp'])); ?>
+                        (<?php echo esc_html(human_time_diff($detail['timestamp'])); ?> 후)
+                    </time>
                 </li>
                 <li>
                     <span class="label"
-                          title="Name of the schedule">Schedule</span><?php echo esc_html(
-                        $detail['schedule']
-                    ); ?>
+                          title="Name of the schedule">Schedule</span><?php echo esc_html($detail['schedule']); ?>
                 </li>
             </ul>
         </div>

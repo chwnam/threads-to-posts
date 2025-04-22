@@ -99,7 +99,6 @@ function ttpGetLogger(): Logger
  *
  * @return object{
  *     enable_tester: boolean,
- *     enable_dump: boolean,
  * }
  */
 function ttpGetMisc(): object

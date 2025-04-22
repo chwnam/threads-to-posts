@@ -63,14 +63,15 @@ class AdminPostHandler implements Module
             wp_die('You are not allowed to do this action.');
         }
 
-        $value = sanitize_key($_REQUEST['ttp_scrap_mode'] ?? '');
+        $value = sanitize_key($_REQUEST['ttp_scrap_mode'] ?? 'disabled');
         ttpGet(Options::class)->ttp_scrap_mode->update($value);
         // Clear staged timestamp.
         CronHandler::clearStaged();
 
-        // Set cron schedule.
+        // Set the cron schedule.
         switch ($value) {
-            case '':
+            default:
+            case 'disabled':
                 wp_clear_scheduled_hook('ttp_cron_scrap');
                 break;
 

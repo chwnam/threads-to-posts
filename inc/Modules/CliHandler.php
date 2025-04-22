@@ -57,7 +57,7 @@ class CliHandler implements Module
      *
      * <task>...: Task identifiers
      *
-     * [--append]: Push tasks at the head of the queue.
+     * [--prepend]: Push tasks at the head of the queue.
      *
      * @param array $args
      * @param array $kwargs
@@ -66,64 +66,19 @@ class CliHandler implements Module
      */
     public function add(array $args, array $kwargs): void
     {
-        $append = isset($kwargs['append']);
-        $queue  = $this->runner->getQueue();
+        $prepend = isset($kwargs['prepend']);
+        $queue   = $this->runner->getQueue();
 
-        if ($append) {
+        if ($prepend) {
             $args = array_reverse($args);
         }
         foreach ($args as $task) {
-            $queue->push($task, $append);
+            $queue->push($task, $prepend);
         }
 
         $queue->save();
 
         WP_CLI::success('Task(s) queued.');
-    }
-
-    /**
-     * Prepare Threads posts scan and scrap.
-     *
-     * Clear current queue and add {heavy,light}-scrap.
-     *
-     * ## OPTIONS
-     * [--yes]: Do not ask
-     * [--heavy]: Defaults to light-scrap. Use this switch to perform heavy-scrap.
-     *
-     * If it is light-scrap:
-     * - Only fetch the first threads page, maximum 25.
-     * - Only fetch the first conversations page.
-     * - Save only posts and replies older than 15 minutes.
-     * - Save replies only by you, replied to only yours.
-     *
-     * If it is heavy-scrap:
-     * - All posts in all pages, all my replies that are replied to yours are scanned.
-     * - Timestamp is not considered.
-     *
-     * ## EXAMPLES
-     * wp ttp scrap
-     * wp ttp scrap --heavy
-     * wp ttp scrap --heavy --yes
-     *
-     * @param $_
-     * @param $kwargs
-     *
-     * @return void
-     */
-    public function scrap($_, $kwargs): void
-    {
-        $type = isset($kwargs['heavy']) ? 'heavy' : 'light';
-        $yes  = isset($kwargs['yes']) && $kwargs['yes'];
-        if (!$yes) {
-            WP_CLI::confirm('Queue will be cleared. Are you sure?', $kwargs);
-        }
-
-        $queue = $this->runner->getQueue();
-        $queue->clear();
-        $queue->push("$type-scrap");
-        $queue->save();
-
-        WP_CLI::success('Queue initialized. Run `wp ttp run` to start.');
     }
 
     /**
@@ -136,7 +91,8 @@ class CliHandler implements Module
     {
         $api    = ttpGetApi();
         $result = $api->getMe(['fields' => UserFields::getFields(Fields::ALL)]);
-        print_r($result);
+
+        WP_CLI::line(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 
     /**
@@ -151,15 +107,27 @@ class CliHandler implements Module
      *                e.g., 2-10 (from index 2 to 10), 3- (from 3 to the end), -10 (from the beginning to 10).
      *                Param min and max are inclusive.
      *
+     * [--all]: Remove all tasks. The same as 'wp ttp reset --yes'.
+     * [--invert]: In this case, tasks of the specified indices are preserved, and the others are removed.
+     *
      * @param $args
+     * @param $kwargs
      *
      * @return void
      */
-    public function remove($args): void
+    public function remove($args, $kwargs): void
     {
+        $all   = isset($kwargs['all']);
         $queue = $this->runner->getQueue();
-        $items = $queue->export();
 
+        if ($all) {
+            $queue->clear();
+            $queue->save();
+            WP_CLI::success('All tasks removed.');
+            return;
+        }
+
+        $items  = $queue->export();
         $indice = [];
 
         foreach ($args as $arg) {
@@ -185,16 +153,26 @@ class CliHandler implements Module
                 fn($i) => is_int($i) && $i > -1,
             )
         );
-        rsort($indice);
 
-        foreach ($indice as $i) {
-            if (isset($items[$i])) {
-                unset($items[$i]);
+        if (isset($kwargs['invert'])) {
+            $preserved = [];
+            foreach ($indice as $i) {
+                if (isset($items[$i])) {
+                    $preserved[] = $items[$i];
+                }
+            }
+            $items = $preserved;
+        } else {
+            rsort($indice); // Make sure that we are removing from the end of the array.
+            foreach ($indice as $i) {
+                if (isset($items[$i])) {
+                    unset($items[$i]);
+                }
             }
         }
-        $items = array_values($items); // Re-construct index.
 
-        $queue->import($items);
+        // Import after recovering array indice.
+        $queue->import(array_values($items));
         $queue->save();
 
         WP_CLI::success('Task(s) removed.');
@@ -238,7 +216,7 @@ class CliHandler implements Module
      * ## OPTIONS
      *
      * <file_name>: File name to import.
-     * [--append]: Append tasks to the queue.
+     * [--prepend]: Append tasks to the queue.
      *
      * @param $args
      *
@@ -247,17 +225,17 @@ class CliHandler implements Module
     public function import($args): void
     {
         list($fileName) = $args;
-        $append = isset($kwargs['append']);
+        $prepend = isset($kwargs['prepend']);
 
         $items = file_get_contents($fileName);
         $items = explode("\n", $items);
 
-        if ($append) {
+        if ($prepend) {
             $items = array_reverse($items);
         }
         $queue = $this->runner->getQueue();
         foreach ($items as $item) {
-            $queue->push($item, $append);
+            $queue->push($item, $prepend);
         }
         $queue->save();
 
@@ -266,10 +244,21 @@ class CliHandler implements Module
 
     /**
      * Remove all queued tasks.
+     *
+     * ## OPTIONS
+     * [--yes]: Do not ask
+     *
+     * @param array $args
+     * @param array $kwargs
+     *
+     * @return void
      */
-    public function reset(): void
+    public function reset(array $args, array $kwargs): void
     {
-        WP_CLI::confirm('Are you sure?');
+        $yes = isset($kwargs['yes']) && $kwargs['yes'];
+        if (!$yes) {
+            WP_CLI::confirm('Are you sure?');
+        }
 
         $queue = $this->runner->getQueue();
         $queue->clear();
@@ -317,6 +306,51 @@ class CliHandler implements Module
         $this->runner->run($kwargs);
 
         WP_CLI::success('Run finished.');
+    }
+
+    /**
+     * Prepare Threads posts scan and scrap.
+     *
+     * Clear current queue and add {heavy,light}-scrap.
+     *
+     * ## OPTIONS
+     * [--yes]: Do not ask
+     * [--heavy]: Defaults to light-scrap. Use this switch to perform heavy-scrap.
+     *
+     * If it is light-scrap:
+     * - Only fetch the first threads page, maximum 25.
+     * - Only fetch the first conversations page.
+     * - Save only posts and replies older than 15 minutes.
+     * - Save replies only by you, replied to only yours.
+     *
+     * If it is heavy-scrap:
+     * - All posts in all pages, all my replies that are replied to yours are scanned.
+     * - Timestamp is not considered.
+     *
+     * ## EXAMPLES
+     * wp ttp scrap
+     * wp ttp scrap --heavy
+     * wp ttp scrap --heavy --yes
+     *
+     * @param $_
+     * @param $kwargs
+     *
+     * @return void
+     */
+    public function scrap($_, $kwargs): void
+    {
+        $type = isset($kwargs['heavy']) ? 'heavy' : 'light';
+        $yes  = isset($kwargs['yes']) && $kwargs['yes'];
+        if (!$yes) {
+            WP_CLI::confirm('Queue will be cleared. Are you sure?', $kwargs);
+        }
+
+        $queue = $this->runner->getQueue();
+        $queue->clear();
+        $queue->push("$type-scrap");
+        $queue->save();
+
+        WP_CLI::success('Queue initialized. Run `wp ttp run` to start.');
     }
 
     /**

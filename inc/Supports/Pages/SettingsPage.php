@@ -6,6 +6,7 @@ use Bojaghi\Contract\Support;
 use Bojaghi\FieldsRender\AdminCompound as AC;
 use Bojaghi\FieldsRender\Render as R;
 use Bojaghi\Template\Template;
+use Chwnam\ThreadsToPosts\Modules\CronHandler;
 use Chwnam\ThreadsToPosts\Modules\Options;
 use function Chwnam\ThreadsToPosts\ttpGetToken;
 use function Chwnam\ThreadsToPosts\ttpGetLogger;
@@ -165,11 +166,25 @@ class SettingsPage implements Support
     {
         $args      = ['cron_details' => []];
         $schedules = wp_get_schedules();
-        $event     = wp_get_scheduled_event('ttp_long_live_token_check');
 
+        /**
+         * Targets
+         *
+         * @see CronHandler
+         */
+        $event = wp_get_scheduled_event('ttp_long_live_token_check');
         if ($event) {
             $args['cron_details'][] = [
                 'title'     => 'Long-live access token check',
+                'timestamp' => $event->timestamp,
+                'schedule'  => $schedules[$event->schedule]['display'] ?? '',
+            ];
+        }
+
+        $event = wp_get_scheduled_event('ttp_cron_scrap');
+        if ($event) {
+            $args['cron_details'][] = [
+                'title'     => 'Cron scrap',
                 'timestamp' => $event->timestamp,
                 'schedule'  => $schedules[$event->schedule]['display'] ?? '',
             ];
@@ -222,28 +237,6 @@ class SettingsPage implements Support
             section: 'ttp-misc',
             args:    [
                          'label_for' => 'ttp-enable_tester',
-                         'name'      => $name,
-                         'value'     => $value,
-                     ],
-        );
-
-        add_settings_field(
-            id:      'ttp-enable_dump',
-            title:   'Enable API Dump',
-            callback: function (array $args): void {
-                echo R::checkbox(
-                    label:   'Every API call result is storead is .json file.',
-                    checked: $args['value']['enable_dump'] ?? false,
-                    attrs:   [
-                                 'id'   => $args['label_for'],
-                                 'name' => $args['name'] . '[enable_dump]',
-                             ]
-                );
-            },
-            page:    'ttp-settings',
-            section: 'ttp-misc',
-            args:    [
-                         'label_for' => 'ttp-enable_dump',
                          'name'      => $name,
                          'value'     => $value,
                      ],

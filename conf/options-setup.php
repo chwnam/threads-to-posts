@@ -29,37 +29,35 @@ return [
         'sanitize_callback' => function ($value): array {
             return [
                 'enable_tester' => filter_var($value['enable_tester'] ?? false, FILTER_VALIDATE_BOOLEAN),
-                'enable_dump'   => filter_var($value['enable_dump'] ?? false, FILTER_VALIDATE_BOOLEAN),
             ];
         },
         'show_in_rest'      => false,
         'default'           => [
             'enable_tester' => false,
-            'enable_dump'   => false,
         ],
         'autoload'          => false,
         'get_filter'        => null,
     ],
     'ttp_scrap_mode' => [
         'type'              => 'string',
-        'group'             => 'ttp-options',
+        'group'             => 'ttp-scrap',
         'description'       => 'Scrap mode',
         'sanitize_callback' => function ($value): string {
             $modes = [
-                '',      // Empty string: disabled. Default.
-                'light', // Light scrap mode.
-                'heavy', // Heavy scrap mode.
+                'disabled', // Empty string: disabled. Default.
+                'light',    // Light scrap mode.
+                'heavy',    // Heavy scrap mode.
             ];
 
             $sanitized = sanitize_text_field($value);
             if (!in_array($sanitized, $modes, true)) {
-                $sanitized = '';
+                $sanitized = 'disabled';
             }
 
             return $sanitized;
         },
         'show_in_rest'      => false,
-        'default'           => '',
+        'default'           => 'disabled',
         'autoload'          => true,
         'get_filter'        => null,
     ],

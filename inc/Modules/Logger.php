@@ -4,6 +4,7 @@ namespace Chwnam\ThreadsToPosts\Modules;
 
 use Bojaghi\Contract\Module;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger as MonologLogger;
@@ -18,7 +19,7 @@ class Logger implements Module
         $logLevel = MonologLogger::toMonologLevel($logLevel);
 
         $this->logger = new MonologLogger('threads-to-posts');
-        $handler      = new StreamHandler(static::getLogPath(), $logLevel);
+        $handler      = new RotatingFileHandler(static::getLogPath(), 7, $logLevel);
         $formatter    = new LineFormatter("[%datetime%] %level_name%: %message%\n", 'Y-m-d H:i:s',);
 
         $this->logger->pushHandler($handler->setFormatter($formatter));
