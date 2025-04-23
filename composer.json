@@ -17,7 +17,31 @@
             "Chwnam\\ThreadsToPosts\\Tests\\": "tests\\"
         }
     },
-    "authors": [],
+    "authors": [
+        {
+            "name": "changwoo",
+            "email": "ep6tri@hotmail.com",
+            "homepage": "https://blog.changwoo.pe.kr"
+        }
+    ],
+    "extra": {
+        "imposter": {
+            "namespace": "Chwnam\\ThreadsToPosts\\Vendor",
+            "excludes": [
+                "bin",
+                "doctrine",
+                "myclabs",
+                "nikic",
+                "phar-io",
+                "phpunit",
+                "sebastian",
+                "theseer",
+                "typisttech",
+                "yoast"
+            ]
+        }
+    },
+    "minimum-stability": "beta",
     "require": {
         "php": ">=8.0",
         "bojaghi/continy": "^1.1",
@@ -28,12 +52,15 @@
         "bojaghi/fields-render": "^1.0",
         "bojaghi/admin-ajax": "^1.0",
         "bojaghi/custom-posts": "^1.0",
-        "ext-pcntl": "*"
+        "ext-pcntl": "*",
+        "psr/log": "^3.0"
     },
     "require-dev": {
         "bojaghi/wp-tests": "^1.1",
         "phpunit/phpunit": "^9",
-        "yoast/phpunit-polyfills": "^4.0"
+        "yoast/phpunit-polyfills": "^4.0",
+        "typisttech/imposter": "^0.6.1",
+        "typisttech/imposter-plugin": "^0.6.2"
     },
     "scripts": {
         "wp-tests": [
@@ -61,7 +88,14 @@
             "@wp-tests:setenv",
             "@wp-tests:clean",
             "bin/install-wp-tests.sh $DB_NAME $DB_USER $DB_PASS $DB_HOST latest"
-        ]
+        ],
+        "daa": "@composer dump-autoload --classmap-authoritative --no-dev",
+        "imposter": "@php imposter.php"
     },
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "config": {
+        "allow-plugins": {
+            "typisttech/imposter-plugin": true
+        }
+    }
 }

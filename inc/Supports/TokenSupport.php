@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Supports;
 
-use Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
 use Chwnam\ThreadsToPosts\Modules\Options;
 use Chwnam\ThreadsToPosts\Supports\Threads\Authorization;
 use Exception;

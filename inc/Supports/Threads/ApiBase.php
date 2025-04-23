@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Supports\Threads;
 
-use Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
 
 abstract class ApiBase implements Support
 {

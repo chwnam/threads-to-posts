@@ -2,13 +2,13 @@
 
 if (!defined('ABSPATH')) exit;
 
-use Bojaghi\AdminAjax\AdminAjax;
-use Bojaghi\AdminAjax\AdminPost;
-use Bojaghi\Continy\Continy;
-use Bojaghi\Cpt\CustomPosts;
-use Bojaghi\Cron;
-use Bojaghi\Fields;
-use Bojaghi\Template;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\AdminAjax\AdminAjax;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\AdminAjax\AdminPost;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy\Continy;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\CustomPosts\CustomPosts;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Cron;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Fields;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template;
 use Chwnam\ThreadsToPosts\Interfaces\TaskQueue;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Modules;
@@ -41,7 +41,7 @@ return [
     'bindings'  => [
         'bojaghi/adminAjax'    => AdminAjax::class,
         'bojaghi/adminPost'    => AdminPost::class,
-        'bojaghi/cpt'          => CustomPosts::class,
+        'bojaghi/customPosts'  => CustomPosts::class,
         'bojaghi/cron'         => Cron\Cron::class,
         'bojachi/cronSched'    => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
@@ -75,9 +75,9 @@ return [
             dirname(TTP_MAIN) . '/conf/admin-post-setup.php', // configuration
             $continy,                                         // container interface
         ],
-        'bojaghi/cpt'                         => dirname(TTP_MAIN) . '/conf/cpt-setup.php',
         'bojaghi/cron'                        => dirname(TTP_MAIN) . '/conf/cron-setup.php',
         'bojachi/cronSched'                   => dirname(TTP_MAIN) . '/conf/cron-sched-setup.php',
+        'bojaghi/customPosts'                 => dirname(TTP_MAIN) . '/conf/custom-posts-setup.php',
         'bojaghi/template'                    => [
             [
                 'infix'  => 'tmpl',
@@ -139,7 +139,7 @@ return [
                 // Bojaghi
                 'bojaghi/adminAjax',
                 'bojaghi/adminPost',
-                'bojaghi/cpt',
+                'bojaghi/customPosts',
                 // TTP
                 'ttp/adminEdit',
                 'ttp/adminMenu',

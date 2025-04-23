@@ -1,0 +1,12 @@
+.DS_Store
+.idea
+.vscode
+.env.*
+
+*.cache
+*.swp
+
+/tests/wp-test-core/
+/tests/wp-test-lib/
+node_modules/
+vendor/

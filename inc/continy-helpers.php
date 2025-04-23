@@ -2,23 +2,22 @@
 
 namespace Chwnam\ThreadsToPosts;
 
-use Bojaghi\Continy\Continy;
-use Bojaghi\Continy\ContinyException;
-use Bojaghi\Continy\ContinyFactory;
-use Bojaghi\Continy\ContinyNotFoundException;
-use Bojaghi\Template\Template;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy\Continy;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy\ContinyException;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy\ContinyFactory;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy\ContinyNotFoundException;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template\Template;
 use Chwnam\ThreadsToPosts\Modules\Logger as LoggerModule;
 use Chwnam\ThreadsToPosts\Modules\Options;
 use Chwnam\ThreadsToPosts\Supports\Threads\Api;
 use Chwnam\ThreadsToPosts\Supports\TokenSupport;
-use Monolog\Logger;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger;
 use WP_Post;
 
 /**
  * Wrapper function
  *
  * @return Continy
- * @throws ContinyException|ContinyNotFoundException
  */
 function ttp(): Continy
 {
@@ -153,7 +152,7 @@ function ttpPostPermalink(WP_Post $post): string
         return '';
     }
 
-    $userName  = get_post_meta($post->ID, '_ttp_user_name', true);
+    $userName  = get_post_meta($post->ID, '_ttp_username', true);
     $shortcode = $post->post_title;
 
     return "https://www.threads.net/@$userName/post/$shortcode";
@@ -168,7 +167,7 @@ function ttpGetUploadsDir(string $relativeDir, bool $createHtAccess = true): str
 
     if (!file_exists($dir)) {
         mkdir($dir, 0777, true);
-        if($createHtAccess) {
+        if ($createHtAccess) {
             $fp = @fopen($dir . '/.htaccess', 'w');
             if ($fp) {
                 fwrite($fp, "Deny from all\n");

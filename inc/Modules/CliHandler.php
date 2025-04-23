@@ -2,13 +2,13 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
 use Chwnam\ThreadsToPosts\Supports\Threads\UserFields;
 use JetBrains\PhpStorm\NoReturn;
-use Monolog\Handler\AbstractHandler;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Handler\AbstractHandler;
 use WP_CLI;
 use WP_CLI\ExitException;
 use function Chwnam\ThreadsToPosts\ttpGet;

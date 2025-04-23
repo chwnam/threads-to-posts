@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 use WP_Post;
 use WP_Query;
 use WP_Screen;

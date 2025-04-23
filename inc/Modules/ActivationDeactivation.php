@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 
 class ActivationDeactivation implements Module
 {
