@@ -1,0 +1,81 @@
+<code_scheme name="PSR-12+" version="173">
+  <PHPCodeStyleSettings>
+    <option name="ALIGN_KEY_VALUE_PAIRS" value="true" />
+    <option name="ALIGN_PHPDOC_PARAM_NAMES" value="true" />
+    <option name="ALIGN_PHPDOC_COMMENTS" value="true" />
+    <option name="ALIGN_ASSIGNMENTS" value="true" />
+    <option name="ALIGN_MATCH_ARM_BODIES" value="true" />
+    <option name="COMMA_AFTER_LAST_PARAMETER" value="true" />
+    <option name="COMMA_AFTER_LAST_CLOSURE_USE_VAR" value="true" />
+    <option name="COMMA_AFTER_LAST_ARGUMENT" value="true" />
+    <option name="COMMA_AFTER_LAST_MATCH_ARM" value="true" />
+    <option name="PHPDOC_BLANK_LINE_BEFORE_TAGS" value="true" />
+    <option name="PHPDOC_BLANK_LINES_AROUND_PARAMETERS" value="true" />
+    <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
+    <option name="LOWER_CASE_NULL_CONST" value="true" />
+    <option name="ELSE_IF_STYLE" value="COMBINE" />
+  </PHPCodeStyleSettings>
+  <codeStyleSettings language="PHP">
+    <option name="ALIGN_MULTILINE_ARRAY_INITIALIZER_EXPRESSION" value="true" />
+    <arrangement>
+      <rules>
+        <section>
+          <rule>
+            <match>
+              <CONST>true</CONST>
+            </match>
+          </rule>
+        </section>
+        <section>
+          <rule>
+            <match>
+              <AND>
+                <FIELD>true</FIELD>
+                <modifiers />
+              </AND>
+            </match>
+          </rule>
+        </section>
+        <section>
+          <rule>
+            <match>
+              <CONSTRUCTOR>true</CONSTRUCTOR>
+            </match>
+          </rule>
+        </section>
+        <section>
+          <rule>
+            <match>
+              <AND>
+                <METHOD>true</METHOD>
+                <modifiers />
+              </AND>
+            </match>
+            <order>BY_NAME</order>
+          </rule>
+        </section>
+        <section>
+          <rule>
+            <match>
+              <TRAIT>true</TRAIT>
+            </match>
+          </rule>
+        </section>
+        <section>
+          <rule>
+            <match>
+              <INTERFACE>true</INTERFACE>
+            </match>
+          </rule>
+        </section>
+        <section>
+          <rule>
+            <match>
+              <CLASS>true</CLASS>
+            </match>
+          </rule>
+        </section>
+      </rules>
+    </arrangement>
+  </codeStyleSettings>
+</code_scheme>

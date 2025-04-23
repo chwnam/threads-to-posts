@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Supports\TokenSupport;
 use function Chwnam\ThreadsToPosts\ttpGet;

@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Supports;
 
-use Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
 
 class ScrapSupport implements Support
 {

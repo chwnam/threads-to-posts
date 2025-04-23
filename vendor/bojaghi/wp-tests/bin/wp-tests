@@ -1,0 +1,188 @@
+#!/usr/bin/env php
+<?php
+
+function main(): int
+{
+    if ('cli' !== php_sapi_name()) {
+        echo 'This script is only for command line.';
+        return 1;
+    }
+
+    $args = getopt(
+        'c::id',
+        [
+            'host::',
+            'user::',
+            'pass::',
+        ]
+    );
+
+    if (empty($args) || isset($args['h'])) {
+        help();
+        return 0;
+    }
+
+    $host = $args['host'] ?? 'localhost';
+    $user = $args['user'] ?? 'wordpress_tests';
+    $pass = $args['pass'] ?? 'wordpress_tests';
+    $db = $args['db'] ?? 'wordpress_tests';
+
+    if (isset($args['c'])) {
+        create_user($args['c'], $host, $user, $pass, $db);
+    }
+
+    if (isset($args['i'])) {
+        create_environment($host, $user, $pass, $db);
+    }
+
+    if (isset($args['d'])) {
+        dump_environment();
+    }
+
+    return 0;
+}
+
+function create_user(string $root_pass, string $host, string $user, string $password, string $database): void
+{
+    $query = "CREATE USER IF NOT EXISTS '$user'@'$host' IDENTIFIED BY '$password'";
+    $command = "echo \"$query\" | ";
+    $command .= "mysql --host='$host' --user='root' " . ($root_pass ? "--password='$root_pass'" : '-p');
+
+    echo $query . PHP_EOL;
+    exec($command);
+
+    $query = "GRANT ALL PRIVILEGES ON \\`$user\\`.* TO '$database'@'$host'";
+    $command = "echo \"$query\" | ";
+    $command .= "mysql --host='$host' --user='root' " . ($root_pass ? "--password='$root_pass'" : '-p');
+
+    echo $query . PHP_EOL;
+    exec($command);
+}
+
+function create_environment(string $host, string $user, string $password, string $database): void
+{
+    $src_dir = dirname(__DIR__);
+    $dst_dir = getcwd();
+
+    /***********************************
+     * Implant composer.json 'scripts' *
+     ***********************************/
+    $src = $src_dir . '/composer.json';
+    $dst = $dst_dir . '/composer.json';
+
+    if (!file_exists($src) || !is_readable($src)) {
+        die("Source composer.json not readable.\n");
+    }
+
+    if (!file_exists($dst) || !is_readable($dst) || !is_writable($dst)) {
+        die("Destination composer.json not writable.\n");
+    }
+
+    $src_json = json_decode(file_get_contents($src), true);
+    $dst_json = json_decode(file_get_contents($dst), true);
+
+    foreach (array_keys($src_json['scripts']) as $key) {
+        if (isset($dst_json['scripts'][$key])) {
+            echo "$key is set in composer.json.\n";
+            continue;
+        }
+        $dst_json['scripts'][$key] = $src_json['scripts'][$key];
+    }
+
+    foreach ($dst_json['scripts']['wp-tests:setenv'] as $i => $line) {
+        // Replace host, user, pass, name
+        if (str_contains($line, 'DB_HOST=localhost') && 'localhost' !== $host) {
+            $dst_json['scripts']['wp-tests:setenv'][$i] = str_replace('DB_HOST=localhost', "DB_HOST=$host", $line);
+        } elseif (str_contains($line, 'DB_USER=wordpress_tests') && 'wordpress_tests' !== $user) {
+            $dst_json['scripts']['wp-tests:setenv'][$i] = str_replace('DB_USER=wordpress_tests', "DB_USER=$user", $line);
+        } elseif (str_contains($line, 'DB_PASS=wordpress_tests') && 'wordpress_tests' !== $password) {
+            $dst_json['scripts']['wp-tests:setenv'][$i] = str_replace('DB_PASS=wordpress_tests', "DB_PASS=$password", $line);
+        } elseif (str_contains($line, 'DB_NAME=wordpress_tests') && 'wordpress_tests' !== $database) {
+            $dst_json['scripts']['wp-tests:setenv'][$i] = str_replace('DB_NAME=wordpress_tests', "DB_NAME=$database", $line);
+        }
+    }
+
+    $scripts = $dst_json['scripts'];
+    ksort($scripts);
+    $dst_json['scripts'] = $scripts;
+
+    if (empty($dst_json['autoload']['psr-4'])) {
+        $dst_json['autoload']['psr-4'] = new stdclass();
+    }
+    if (empty($dst_json['autoload-dev']['psr-4'])) {
+        $dst_json['autoload-dev']['psr-4'] = new stdclass();
+    }
+
+    $string = json_encode($dst_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+    file_put_contents($dst, $string);
+
+
+    /***************************
+     * Copy all required files *
+     ***************************/
+    if (!file_exists($dst_dir . '/bin')) {
+        mkdir($dst_dir . '/bin', 0755);
+    }
+    if (!file_exists($dst_dir . '/bin/install-wp-tests.sh')) {
+        copy($src_dir . '/bin/install-wp-tests.sh', $dst_dir . '/bin/install-wp-tests.sh');
+    }
+    chmod($dst_dir . '/bin/install-wp-tests.sh', 0755);
+
+    if (!file_exists($dst_dir . '/tests')) {
+        mkdir($dst_dir . '/tests', 0755);
+    }
+    if (!file_exists($dst_dir . '/tests/bootstrap.php')) {
+        copy($src_dir . '/tests/bootstrap.php', $dst_dir . '/tests/bootstrap.php');
+    }
+    if (!file_exists($dst_dir . '/tests/TestSample.php')) {
+        copy($src_dir . '/tests/TestSample.php', $dst_dir . '/tests/TestSample.php');
+    }
+
+    if (!file_exists($dst_dir . '/phpunit.xml')) {
+        copy($src_dir . '/phpunit.xml', $dst_dir . '/phpunit.xml');
+    }
+
+
+    /************************
+     * Composer require-dev *
+     ************************/
+    exec("composer require --dev phpunit/phpunit:^9");
+    exec("composer require --dev yoast/phpunit-polyfills");
+}
+
+function dump_environment(): void
+{
+    _dump_env('WP_CORE_DIR');
+    _dump_env('WP_TESTS_DIR');
+    _dump_env('WP_TESTS_PHPUNIT_POLYFILLS_PATH');
+    _dump_env('DB_HOST');
+    _dump_env('DB_USER');
+    _dump_env('DB_PASS');
+    _dump_env('DB_NAME');
+}
+
+function _dump_env(string $name): void
+{
+    printf("%s=%s\n", $name, getenv($name));
+}
+
+function help(): void
+{
+    global $argv;
+
+    $cmd = basename($argv[0]);
+
+    echo PHP_EOL;
+    echo "Usage: $cmd <command> [options]\n\n";
+    echo "Commands:\n";
+    echo "  -c [root_pass]    Create user for testing. DB root user password may required.\n";
+    echo "  -i                Setup initial testing environments.\n";
+    echo "  --host            Database host. Defaults to 'localhost'.\n";
+    echo "  --user            Database user. Defaults to 'wordpress_tests'.\n";
+    echo "  --pass            Database password. Defaults to 'wordpress_tests'.\n";
+    echo "  --db              Database name. Defaults to 'wordpress_tests'.\n";
+    echo PHP_EOL;
+}
+
+exit(main());

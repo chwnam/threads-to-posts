@@ -2,8 +2,8 @@
 
 namespace Chwnam\ThreadsToPosts\Supports;
 
-use Bojaghi\Contract\Support;
-use Monolog\Logger as MonologLogger;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger as MonologLogger;
 use Chwnam\ThreadsToPosts\Interfaces\TaskQueue;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Modules\Logger as LoggerModule;

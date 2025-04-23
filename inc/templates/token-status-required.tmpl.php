@@ -1,6 +1,6 @@
 <?php
 
-use Bojaghi\Template\Template;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template\Template;
 
 /**
  * Scrap tab template

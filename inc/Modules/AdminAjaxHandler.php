@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;

@@ -2,7 +2,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-use Bojaghi\AdminAjax\SubmitBase;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\AdminAjax\SubmitBase;
 use Chwnam\ThreadsToPosts\Modules\AdminAjaxHandler;
 
 return [

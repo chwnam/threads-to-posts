@@ -2,10 +2,10 @@
 
 namespace Chwnam\ThreadsToPosts\Supports\Pages;
 
-use Bojaghi\Contract\Support;
-use Bojaghi\FieldsRender\AdminCompound as AC;
-use Bojaghi\FieldsRender\Render as R;
-use Bojaghi\Template\Template;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\FieldsRender\AdminCompound as AC;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\FieldsRender\Render as R;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template\Template;
 use Chwnam\ThreadsToPosts\Modules\CronHandler;
 use Chwnam\ThreadsToPosts\Modules\Options;
 use function Chwnam\ThreadsToPosts\ttpGetToken;

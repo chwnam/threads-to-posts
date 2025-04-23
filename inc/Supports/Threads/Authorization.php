@@ -3,7 +3,7 @@
 namespace Chwnam\ThreadsToPosts\Supports\Threads;
 
 use Exception;
-use Monolog\Logger;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger;
 use function Chwnam\ThreadsToPosts\ttpGetLogger;
 
 class Authorization extends ApiBase

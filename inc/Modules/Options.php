@@ -2,8 +2,8 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Fields\Modules\Options as OptionsBase;
-use Bojaghi\Fields\Option\Option;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Fields\Modules\Options as OptionsBase;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Fields\Option\Option;
 
 /**
  * See conf/option-setup.php for each detail.

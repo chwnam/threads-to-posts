@@ -2,8 +2,8 @@
 
 namespace Chwnam\ThreadsToPosts\Supports;
 
-use Bojaghi\Contract\Support;
-use Monolog\Logger;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger;
 use Chwnam\ThreadsToPosts\Interfaces\TaskQueue;
 use function Chwnam\ThreadsToPosts\ttpGetLogger;
 

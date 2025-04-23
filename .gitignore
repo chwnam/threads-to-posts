@@ -3,7 +3,13 @@
 node_modules/
 tests/wp-test-core/
 tests/wp-test-lib/
-vendor/
+
+# Vendors that are required in runtime.
+vendor/*
+!vendor/bojaghi
+!vendor/composer
+!vendor/monolog
+!vendor/psr
 
 *.cache
 .DS_Store

@@ -2,8 +2,8 @@
 
 namespace Chwnam\ThreadsToPosts\Supports\Pages;
 
-use Bojaghi\Contract\Support;
-use Bojaghi\Template\Template;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template\Template;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 
 class TaskManagerPage implements Support

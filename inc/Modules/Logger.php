@@ -2,12 +2,12 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Bojaghi\Contract\Module;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Handler\StreamHandler;
-use Monolog\Level;
-use Monolog\Logger as MonologLogger;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Formatter\LineFormatter;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Handler\RotatingFileHandler;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Handler\StreamHandler;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Level;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger as MonologLogger;
 use function Chwnam\ThreadsToPosts\ttpGetUploadsDir;
 
 class Logger implements Module

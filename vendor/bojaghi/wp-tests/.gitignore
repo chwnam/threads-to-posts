@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+
+*.bak
+*.cache
+*.log
+
+/.idea/
+/.vscode/
+/tests/wp-test-core/
+/tests/wp-test-lib/
+/vendor/
+/composer.lock

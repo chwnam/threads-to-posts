@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Supports\Pages;
 
-use Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
 use function Chwnam\ThreadsToPosts\ttpGet;
 use function Chwnam\ThreadsToPosts\ttpGetMisc;
 use function Chwnam\ThreadsToPosts\ttpGetTemplate;
