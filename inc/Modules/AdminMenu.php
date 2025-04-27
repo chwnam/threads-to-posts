@@ -23,7 +23,7 @@ class AdminMenu implements Module
      */
     public function scripts(string $hook): void
     {
-        if ('tools_page_ttp' !== $hook) {
+        if ('ttp_threads_page_ttp' !== $hook) {
             return;
         }
 

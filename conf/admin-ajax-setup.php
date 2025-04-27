@@ -23,4 +23,17 @@ return [
         'ttp_tester',                       // automatic nonce check
         // default priority
     ],
+
+    /**
+     * Fetch article
+     *
+     * @uses AdminAjaxHandler::fetchArticle()
+     */
+    [
+        'ttp_fetch_article',                 // action
+        'ttp/adminAjaxHandler@fetchArticle', // callback
+        SubmitBase::ONLY_PRIV,               // logged-in user only
+        'nonce',                             // automatic nonce check
+        // default priority
+    ],
 ];

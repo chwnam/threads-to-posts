@@ -1,0 +1,10 @@
+#ttp-fetch-article-container {
+    margin-top: 48px;
+}
+
+#ttp-fetch-article-result {
+    border: 1px solid #8c8f94;
+    margin-top: 24px;
+    padding: 8px;
+    white-space: pre-wrap;
+}

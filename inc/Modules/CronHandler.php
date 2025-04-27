@@ -37,9 +37,14 @@ class CronHandler implements Module
         $logger = ttpGetLogger();
 
         if (($staged = self::isStaged())) {
-            $time = human_time_diff($staged);
-            $logger->info("Scheduled scrap has already started $time");
-            return;
+            $thresd = 30 * MINUTE_IN_SECONDS;
+            if (time() - $staged > $thresd) {
+                $logger->info("Staged timestamp is too old($staged) - force scraping");;
+            } else {
+                $time = human_time_diff($staged);
+                $logger->info("Scheduled scrap has already started $time");
+                return;
+            }
         }
         self::setStaged();
 

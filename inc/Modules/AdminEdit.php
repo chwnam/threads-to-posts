@@ -28,10 +28,11 @@ class AdminEdit implements Module
 
     public function init(WP_Screen $screen): void
     {
-        // hooks only for the single edit page.
+        // something only for the single edit page.
         if ('post' === $screen->base && 'ttp_threads' === $screen->post_type) {
             add_action('add_meta_boxes_ttp_threads', [$this, 'editMetaBoxes']);
-            add_action('edit_form_after_editor', [$this, 'outputContent']);
+            add_action('edit_form_top', [$this, 'outputContent']);
+            add_action('admin_enqueue_scripts', [$this, 'enqueueAdminSingle'], 500);
         }
 
         // hooks only for the list page.
@@ -107,6 +108,11 @@ class AdminEdit implements Module
         return $title;
     }
 
+    public function enqueueAdminSingle(): void
+    {
+        wp_enqueue_style('ttp-admin-single');
+    }
+
     public function outputContent(WP_Post $post): void
     {
         $context = [
@@ -131,6 +137,7 @@ class AdminEdit implements Module
         }
 
         echo ttpGetTemplate()->template('admin-single', $context);
+        wp_enqueue_script('ttp-admin-single');
     }
 
     public function removeQuickEdit(bool $enabled, string $post_type): bool

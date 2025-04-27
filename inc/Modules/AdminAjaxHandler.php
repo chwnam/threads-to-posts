@@ -2,16 +2,36 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
-use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
+use Chwnam\ThreadsToPosts\Supports\Threads\Api;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
 use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 use JetBrains\PhpStorm\NoReturn;
 use function Chwnam\ThreadsToPosts\ttpGetApi;
 
 class AdminAjaxHandler implements Module
 {
+    /**
+     * @throws ApiCallException
+     */
+    #[NoReturn]
+    public function fetchArticle(Api $api): void
+    {
+        $threadsId = sanitize_text_field($_GET['threads_id'] ?? '');
+        if (!$threadsId) {
+            return;
+        }
+
+        $result = $api->getUserSingleThread(
+            $threadsId,
+            ['fields' => PostFields::getFields(Fields::ALL)]
+        );
+
+        wp_send_json_success(['result' => $result]);
+    }
+
     #[NoReturn]
     public function tester(): void
     {

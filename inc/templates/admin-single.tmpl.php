@@ -25,80 +25,96 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<table class="form-table" role="presentation">
-    <tbody>
-    <tr>
-        <th scope="row">
-            ID
-        </th>
-        <td>
-            <?php echo esc_html($this->get('id')); ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            Owner
-        </th>
-        <td>
-            <?php echo esc_html($this->get('owner')); ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            Username
-        </th>
-        <td>
-            <?php echo esc_html($this->get('username')); ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            Text
-        </th>
-        <td>
-            <?php echo wp_kses_post($this->get('text')); ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            Timestamp
-        </th>
-        <td>
-            <?php echo esc_html($this->get('timestamp')); ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            Permalink
-        </th>
-        <td>
-            <a href="<?php echo esc_url($this->get('permalink')); ?>"
-               target="ttp-permalink">
-                <?php echo esc_html($this->get('permalink')); ?>
-            </a>
-        </td>
-    </tr>
-    <?php if ($this->get('show_embled')) : ?>
+<div id="ttp-admin-single-container">
+    <table class="form-table" role="presentation">
+        <tbody>
         <tr>
             <th scope="row">
-                Embed
+                ID
             </th>
             <td>
-                <?php echo $this->fragment('embed'); ?>
+                <?php echo esc_html($this->get('id')); ?>
             </td>
         </tr>
-    <?php endif; ?>
-    <!-- <tr>
-        <th scope="row">
-        </th>
-        <td>
-        </td>
-    </tr> -->
-    </tbody>
-</table>
-<p class="submit">
-    <a class="button button-primary"
-       href="<?php echo esc_url($this->get('back_link')); ?>">
-        Back
-    </a>
-</p>
+        <tr>
+            <th scope="row">
+                Owner
+            </th>
+            <td>
+                <?php echo esc_html($this->get('owner')); ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Username
+            </th>
+            <td>
+                <?php echo esc_html($this->get('username')); ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Text
+            </th>
+            <td>
+                <?php echo wp_kses_post($this->get('text')); ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Timestamp
+            </th>
+            <td>
+                <?php echo esc_html($this->get('timestamp')); ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Permalink
+            </th>
+            <td>
+                <a href="<?php echo esc_url($this->get('permalink')); ?>"
+                   target="ttp-permalink">
+                    <?php echo esc_html($this->get('permalink')); ?>
+                </a>
+            </td>
+        </tr>
+        <?php if ($this->get('show_embled')) : ?>
+            <tr>
+                <th scope="row">
+                    Embed
+                </th>
+                <td>
+                    <?php echo $this->fragment('embed'); ?>
+                </td>
+            </tr>
+        <?php endif; ?>
+        <!-- <tr>
+            <th scope="row">
+            </th>
+            <td>
+            </td>
+        </tr> -->
+        </tbody>
+    </table>
+    <p class="submit">
+        <a class="button button-primary"
+           href="<?php echo esc_url($this->get('back_link')); ?>">
+            Back
+        </a>
+    </p>
+    <div id="ttp-fetch-article-container">
+        <h3>Fetch Article</h3>
+        <button
+                id="ttp-fetch-article"
+                class="button button-primary"
+                data-id="<?php echo esc_attr($this->get('id')); ?>"
+                data-nonce="<?php echo esc_attr(wp_create_nonce('ttp_fetch_article')); ?>">
+            Fetch Now
+        </button>
+        <div>
+            <pre id="ttp-fetch-article-result">
+            </pre>
+        </div>
+    </div>
+</div>

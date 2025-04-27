@@ -2,6 +2,14 @@
 
 ## Beta Phase
 
+### 1.0.0.beta-2
+
+2024-05-04
+
+- Fix CSS loading error
+- Add feature: fetching threads single post and display the raw API result in the admin single page.
+- Improve scrap process
+
 ### 1.0.0.beta-1
 
 2024-04-28

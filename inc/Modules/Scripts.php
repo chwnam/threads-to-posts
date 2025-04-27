@@ -51,7 +51,17 @@ class Scripts implements Module
                     'strategy'  => 'defer',
                     'in_footer' => true,
                 ],
-            ]
+            ],
+            [
+                'handle' => 'ttp-admin-single',
+                'src'    => plugins_url('assets/admin-single.js', TTP_MAIN),
+                'deps'   => ['jquery', 'wp-util'],
+                'ver'    => TTP_VERSION,
+                'args'   => [
+                    'strategy'  => 'defer',
+                    'in_footer' => true,
+                ],
+            ],
         ];
 
         foreach ($items as $item) {
@@ -95,6 +105,12 @@ class Scripts implements Module
             [
                 'handle' => 'ttp-tester',
                 'src'    => plugins_url('assets/tester.css', TTP_MAIN),
+                'deps'   => [],
+                'ver'    => TTP_VERSION,
+            ],
+            [
+                'handle' => 'ttp-admin-single',
+                'src'    => plugins_url('assets/admin-single.css', TTP_MAIN),
                 'deps'   => [],
                 'ver'    => TTP_VERSION,
             ],
