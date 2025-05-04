@@ -35,4 +35,4 @@ if (!defined('ABSPATH')) {
         </div>
     </a>
 </blockquote>
-<script async src="https://www.threads.net/embed.js"></script>
+<script async src="https://www.threads.com/embed.js"></script>

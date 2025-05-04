@@ -3,6 +3,7 @@
 namespace Chwnam\ThreadsToPosts\Supports\Threads;
 
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
 
 abstract class ApiBase implements Support
 {
@@ -25,6 +26,20 @@ abstract class ApiBase implements Support
         $code    = wp_remote_retrieve_response_code($r);
         $message = wp_remote_retrieve_response_message($r);
         $body    = wp_remote_retrieve_body($r);
+
+        if (is_string($code)) {
+            ttpGetLogger()->debug(
+                "API call returned non-integer status code: $code",
+                [
+                    'url'     => $url,
+                    'args'    => $args,
+                    'code'    => $code,
+                    'message' => $message,
+                    'body'    => $body,
+                ]
+            );
+            throw new ApiCallException("$message: $body", 0);
+        }
 
         if (200 !== $code) {
             throw new ApiCallException("$message: $body", $code);

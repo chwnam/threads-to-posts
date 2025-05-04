@@ -52,6 +52,16 @@ class SimpleTaskRunner implements TaskRunner, Support
         $this->task    = '';
     }
 
+    public function getQueue(): TaskQueue
+    {
+        return $this->queue;
+    }
+
+    public function setQueue(TaskQueue $queue): void
+    {
+        $this->queue = $queue;
+    }
+
     /**
      * Get current task
      *
@@ -83,11 +93,16 @@ class SimpleTaskRunner implements TaskRunner, Support
                 continue;
             }
 
+            if (0 === $this->queue->size() % 50) {
+                $this->logger->debug(sprintf('Queue size %d, saving now.', $this->queue->size()));
+                $this->queue->save();
+            }
+
             $this->logger->info(
                 sprintf(
-                    '[%d/%d] Task %s',
+                    '[%d/%s] Task %s',
                     $this->numTask + 1,
-                    $this->maxTask,
+                    $this->forever ? 'INF' : $this->maxTask,
                     $this->task,
                 )
             );
@@ -181,7 +196,7 @@ class SimpleTaskRunner implements TaskRunner, Support
         // Only eXtended intent wants next pages.
         if ('x' === $intent && $hasNext && $after) {
             $newParams = self::mergeParams($params, ['after' => $after]);
-            $this->queue->push("t$intent::$newParams", true);
+            $this->queue->push("t$intent::$newParams");
         }
 
         return true;
@@ -307,15 +322,5 @@ class SimpleTaskRunner implements TaskRunner, Support
     {
         $this->queue->save();
         $this->task = '';
-    }
-
-    public function getQueue(): TaskQueue
-    {
-        return $this->queue;
-    }
-
-    public function setQueue(TaskQueue $queue): void
-    {
-        $this->queue = $queue;
     }
 }

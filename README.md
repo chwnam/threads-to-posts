@@ -1,13 +1,15 @@
 # Threads to Posts
 
-A WordPress plugin that imports your posts from [Threads](https://www.threads.net) into your WordPress blog.
+A WordPress plugin that imports your posts from [Threads](https://www.threads.com) into your WordPress blog.
 
 README in Korean: [README-ko.md](./README-ko.md)
 
 ## Installation Guide
 
 **Note**: This plugin is **not** officially registered on [wordpress.org].  
-**Requires PHP 8.0 or higher.**
+
+- PHP 8.0 or higher
+- Required extensions: `ext-pcntl`, `ext-zlib`
 
 Clone the plugin via Git:
 
@@ -24,7 +26,7 @@ Then, you will find **Threads to Posts** under **Tools** in the admin menu.
 To use the Threads API correctly:
 
 1. Register an app for Threads on the [Meta developers](https://developers.facebook.com/).
-2. Get the App ID and Secret from the app.
+2. Get the App ID and App Secret from the app.
 3. Get an access token through the plugin.
 
 For details, refer to the [Setup Guide](./docs/en/how-to-setup.md).

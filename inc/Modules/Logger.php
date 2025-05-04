@@ -20,7 +20,7 @@ class Logger implements Module
 
         $this->logger = new MonologLogger('threads-to-posts');
         $handler      = new RotatingFileHandler(static::getLogPath(), 7, $logLevel);
-        $formatter    = new LineFormatter("[%datetime%] %level_name%: %message%\n", 'Y-m-d H:i:s',);
+        $formatter    = new LineFormatter("[%datetime%] %level_name%: %message% %context% %extra%\n", 'Y-m-d H:i:s',);
 
         $this->logger->pushHandler($handler->setFormatter($formatter));
 

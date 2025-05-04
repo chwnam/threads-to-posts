@@ -53,6 +53,7 @@
         "bojaghi/admin-ajax": "^1.0",
         "bojaghi/custom-posts": "^1.0",
         "ext-pcntl": "*",
+        "ext-zlib": "*",
         "psr/log": "^3.0"
     },
     "require-dev": {
@@ -92,7 +93,6 @@
         "daa": "@composer dump-autoload --classmap-authoritative --no-dev",
         "imposter": "@php imposter.php"
     },
-    "version": "1.0.0",
     "config": {
         "allow-plugins": {
             "typisttech/imposter-plugin": true

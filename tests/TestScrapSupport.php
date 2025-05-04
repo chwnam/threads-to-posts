@@ -84,7 +84,7 @@ class TestScrapSupport extends WP_UnitTestCase
             "id": "17888331330239479",
             "media_product_type": "THREADS",
             "media_type": "TEXT_POST",
-            "permalink": "https://www.threads.net/@test_user/post/DIaq4o4T55X",
+            "permalink": "https://www.threads.com/@test_user/post/DIaq4o4T55X",
             "owner": {
                 "id": "9491711744278740"
             },
@@ -165,7 +165,7 @@ class TestScrapSupport extends WP_UnitTestCase
             "id": "12345677890",
             "text": "Test Text",
             "username": "test_user",
-            "permalink": "https://www.threads.net/@test_user/post/DIN40-PT9oT",
+            "permalink": "https://www.threads.com/@test_user/post/DIN40-PT9oT",
             "timestamp": "2025-04-09T07:12:33+0000",
             "media_product_type": "THREADS",
             "media_type": "TEXT_POST",

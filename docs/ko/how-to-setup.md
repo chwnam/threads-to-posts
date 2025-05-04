@@ -2,7 +2,7 @@
 
 ## 용어
 
-- Threds: [threads](https://www.threads.net) 서비스를 의미합니다. 항상 영문으로 적습니다.
+- Threds: [threads](https://www.threads.com) 서비스를 의미합니다. 항상 영문으로 적습니다.
 - 스레드: Threads에서 삭성된 포스팅을 스레드라고 합니다.
 - 포스트: 워드프레스로 가져온 스레드를 말합니다.
 
@@ -100,7 +100,7 @@ Threads 의 설정으로 이동합니다. 메뉴 중 아래 그림과 같은 아
 ## 액세스 토큰 발급
 
 설정을 정상적으로 마치면 발급받은 'App ID'와 'App Secret'을 이용해 액세스 토큰을 발급받을 수 있습니다.
-이것을 `도구 > Threads to Posts > Settings`에서 입력합니다. 아래 그림과 같습니다.
+이것을 `Threads > Settings`에서 입력합니다. 아래 그림과 같습니다.
 ![](./img/authorize-01.png)
 
 먼저 '저장' 버튼을 누릅니다. 그러면 'Access Token' 섹션에 'Authorize' 버튼이 생성됩니다.
@@ -109,7 +109,7 @@ Threads 의 설정으로 이동합니다. 메뉴 중 아래 그림과 같은 아
 
 그러면 스레드 웹 사이트에서 아래와 비슷한 인증을 위한 메시지가 출력됩니다.
 메시지는 상태에 따라 조금 다를 수 있습니다.
-스레드 (https://www.threads.net) URL이 정확하다는 것을 확인하세요.
+스레드 (https://www.threads.com) URL이 정확하다는 것을 확인하세요.
 ![](./img/authorize-03.png)
 
 승인하면 아래 그림처럼 액세스 토큰 상태를 확인할 수 있습니다.

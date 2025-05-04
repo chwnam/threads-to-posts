@@ -2,6 +2,20 @@
 
 ## Beta Phase
 
+### 1.0.0.beta-3
+
+2024-05-04
+
+- Add log when API server returns a string type status code
+- Add addtional exception code when API server returns a string-typed status code
+- Change Threads domain from `www.threads.net` to `www.threads.com`
+- Fix wrong total number display when used with `--forever` switch
+- Update logger format, now it can display context data, and extra data
+- Update task queue, now it can compressto task queue
+- Update task queue run behavior, now it saves while running, after completing every 50 tasks 
+- Remove version from composer.json
+- Update docs
+
 ### 1.0.0.beta-2
 
 2024-05-04

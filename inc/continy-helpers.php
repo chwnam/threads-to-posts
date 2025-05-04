@@ -155,7 +155,7 @@ function ttpPostPermalink(WP_Post $post): string
     $userName  = get_post_meta($post->ID, '_ttp_username', true);
     $shortcode = $post->post_title;
 
-    return "https://www.threads.net/@$userName/post/$shortcode";
+    return "https://www.threads.com/@$userName/post/$shortcode";
 }
 
 function ttpGetUploadsDir(string $relativeDir, bool $createHtAccess = true): string
