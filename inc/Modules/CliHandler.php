@@ -6,7 +6,7 @@ use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
-use Chwnam\ThreadsToPosts\Supports\Threads\UserFields;
+use Chwnam\ThreadsToPosts\Supports\Threads\AppUserFields;
 use JetBrains\PhpStorm\NoReturn;
 use Chwnam\ThreadsToPosts\Vendor\Monolog\Handler\AbstractHandler;
 use WP_CLI;
@@ -90,7 +90,7 @@ class CliHandler implements Module
     public function me(): void
     {
         $api    = ttpGetApi();
-        $result = $api->getMe(['fields' => UserFields::getFields(Fields::ALL)]);
+        $result = $api->getMe(['fields' => AppUserFields::getFields(Fields::ALL)]);
 
         WP_CLI::line(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }

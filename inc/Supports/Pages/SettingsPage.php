@@ -241,5 +241,27 @@ class SettingsPage implements Support
                          'value'     => $value,
                      ],
         );
+
+        add_settings_field(
+            id:      'ttp-enable_repost_fetch',
+            title:   'Enable Repost Fetch',
+            callback: function (array $args): void {
+                echo R::checkbox(
+                    label:   'Enable simple content scrap for other user\'s reposted posts.',
+                    checked: $args['value']['enable_repost_fetch'] ?? false,
+                    attrs:   [
+                                 'id'   => $args['label_for'],
+                                 'name' => $args['name'] . '[enable_repost_fetch]',
+                             ]
+                );
+            },
+            page:    'ttp-settings',
+            section: 'ttp-misc',
+            args:    [
+                         'label_for' => 'ttp-enable_repost_fetch',
+                         'name'      => $name,
+                         'value'     => $value,
+                     ],
+        );
     }
 }

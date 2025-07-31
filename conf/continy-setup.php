@@ -15,6 +15,7 @@ use Chwnam\ThreadsToPosts\Modules;
 use Chwnam\ThreadsToPosts\Modules\CliHandler;
 use Chwnam\ThreadsToPosts\Supports;
 use function Chwnam\ThreadsToPosts\ttpGetAuth;
+use function Chwnam\ThreadsToPosts\ttpGetMisc;
 use function Chwnam\ThreadsToPosts\ttpGetToken;
 
 return [
@@ -103,6 +104,13 @@ return [
             $value = ttpGetToken();
             return [
                 'userId' => $value->user_id,
+            ];
+        },
+        Supports\ScrapSupport::class          => function ($continy): array {
+            $value = ttpGetMisc();
+            return [
+                'crawler'           => $continy->get(Supports\Threads\Crawler::class),
+                'enableRepostFetch' => $value->enable_repost_fetch,
             ];
         },
         Supports\Threads\Authorization::class => function (): array {

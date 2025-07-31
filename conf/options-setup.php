@@ -28,12 +28,14 @@ return [
         'description'       => 'Miscellaneous options.',
         'sanitize_callback' => function ($value): array {
             return [
-                'enable_tester' => filter_var($value['enable_tester'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'enable_repost_fetch' => filter_var($value['enable_repost_fetch'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                'enable_tester'       => filter_var($value['enable_tester'] ?? false, FILTER_VALIDATE_BOOLEAN),
             ];
         },
         'show_in_rest'      => false,
         'default'           => [
-            'enable_tester' => false,
+            'enable_repost_fetch' => false,
+            'enable_tester'       => false,
         ],
         'autoload'          => false,
         'get_filter'        => null,

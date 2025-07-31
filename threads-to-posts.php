@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Threas to Posts
  * Plugin URI:        https://github.com/chwnam/threads-to-posts
- * Version:           1.0.0-beta.3
+ * Version:           1.0.0.beta-4
  * Description:       Export your Threads postings to WordPress postings.
  * Author:            chwnam
  * Requires at least: 6.7
@@ -12,7 +12,7 @@
 use function Chwnam\ThreadsToPosts\ttp;
 
 const TTP_MAIN    = __FILE__;
-const TTP_VERSION = '1.0.0-beta.3';
+const TTP_VERSION = '1.0.0-beta.4';
 
 require __DIR__ . '/vendor/autoload.php';
 

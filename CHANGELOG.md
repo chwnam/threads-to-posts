@@ -2,6 +2,20 @@
 
 ## Beta Phase
 
+### 1.0.0.beta-4
+
+2024-08-01
+
+- Support for more detailed fields:
+  - is_quote_post
+  - media_type
+  - media_url
+  - reposted_post.id
+  - quited_post.id
+- Support simple text fetching from other users' posts when you repost it.
+- Add crawl test in the admin tester page.
+- Fix wrong redirection after authorization. 
+
 ### 1.0.0.beta-3
 
 2024-05-04

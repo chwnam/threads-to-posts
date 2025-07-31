@@ -52,8 +52,6 @@ class AdminMenu implements Module
             'ttp',
             [$this, 'outputPage'],
         );
-        $logger = ttpGetLogger();
-        $logger->debug('admin menu added');
     }
 
     public function outputPage(): void

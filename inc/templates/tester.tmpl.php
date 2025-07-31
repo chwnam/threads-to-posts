@@ -79,5 +79,29 @@ $this
             </div>
         </div>
     </div>
+    <div id="ttp-tester-crawling" class="ttp-tester">
+        <h3>URL Crawling</h3>
+        <pre id="ttp-crawling-response" class="ttp-raw_output"></pre>
+        <p class="description">
+            It uses just a simple crawling method.<br>
+            Enter a valid single Theads post, either 'TEXT_POST' and 'REPOST_FACADE' types,
+            and it just get a raw HTML document and extracts the 'og:description' &lt;meta&gt; tag value from the document.<br>
+            That's it.
+        </p>
+        <div class="ttp-retrieve-coltrols">
+            <button id="ttp-crawling_test"
+                    class="button"
+                    type="button"
+                    data-action="ttp_tester"
+                    data-nonce="<?php echo esc_attr(wp_create_nonce('ttp_tester')); ?>">Crawl
+            </button>
+            <div class="ttp-crawl-options-group">
+                <div class="ttp-crawl-option-group">
+                    <label for="ttp-crawl-url">URL</label>
+                    <input id="ttp-crawl-url" type="url">
+                </div>
+            </div>
+        </div>
+    </div>
 <?php
 $this->end();

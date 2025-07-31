@@ -13,4 +13,5 @@ vendor/*
 !vendor/psr
 
 *.cache
+*.html
 .DS_Store

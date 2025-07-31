@@ -2,7 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Supports\Threads;
 
-class ConversationsFields extends Fields
+class ConversationsFields extends PostFields
 {
     const HAS_REPLIES          = 'has_replies';
     const HIDE_STATUS          = 'hide_status';
@@ -36,5 +36,7 @@ class ConversationsFields extends Fields
         self::HIDE_STATUS,
         self::REPLY_AUDIENCE,
         self::GIF_URL,
+        self::POLL_ATTACHMENT,
+        self::TOPIC_TAG,
     ];
 }

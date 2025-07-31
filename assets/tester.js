@@ -128,4 +128,41 @@ jQuery(function ($) {
             })
         }
     });
+
+    $('#ttp-tester-crawling').ttpTester({
+        onRetrieve: (data) => {
+            const {
+                action,
+                nonce,
+                rawOutput,
+                retrieve,
+            } = data
+
+            const url = $('#ttp-crawl-url').val()
+            if (0 === url.length) {
+                alert('Please enter a URL')
+                return
+            }
+
+            wp.ajax.send({
+                beforeSend: () => {
+                    retrieve.prop('disabled', true);
+                },
+                data: {
+                    action,
+                    type: 'crawling',
+                    url,
+                    nonce,
+                },
+                method: 'get',
+                url: ajaxurl,
+            }).done((response) => {
+                rawOutput.html(response.output)
+            }).fail((xhr) => {
+                console.error(`${xhr.status} ${xhr.statusText} ${xhr.responseText}`)
+            }).always(() => {
+                retrieve.prop('disabled', false);
+            })
+        }
+    });
 });

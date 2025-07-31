@@ -97,6 +97,7 @@ function ttpGetLogger(): Logger
  * Heper for retrieving misc option
  *
  * @return object{
+ *     enable_repost_fetch: boolean,
  *     enable_tester: boolean,
  * }
  */

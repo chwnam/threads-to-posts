@@ -27,7 +27,7 @@ class AdminPostHandler implements Module
             ttpCall(TokenSupport::class, 'redirectionCallback');
             // This action is fired by redirection from Threads, not by our site.
             // Relying on referrer is not a good idea.
-            wp_redirect(admin_url('tools.php?page=ttp&tab=settings'));
+            wp_redirect(admin_url('edit.php?post_type=ttp_threads&page=ttp&tab=settings'));
             exit;
         }
     }

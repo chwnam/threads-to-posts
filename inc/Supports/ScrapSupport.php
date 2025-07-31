@@ -2,11 +2,14 @@
 
 namespace Chwnam\ThreadsToPosts\Supports;
 
+use Chwnam\ThreadsToPosts\Supports\Threads\Crawler;
+use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use Exception;
 
 class ScrapSupport implements Support
 {
-    public function __construct()
+    public function __construct(private Crawler $crawler, private bool $enableRepostFetch = false)
     {
     }
 
@@ -15,7 +18,7 @@ class ScrapSupport implements Support
      *
      * Threads posts, replies have these fields:
      * - id
-     * - owner.id (optionam): posts only
+     * - owner.id (optional): posts only
      * - shortcode
      * - text
      * - timestamp
@@ -27,15 +30,20 @@ class ScrapSupport implements Support
      */
     public function convertThreadsMedia(array $threadsMedia): array|false
     {
-        $id        = $threadsMedia['id'] ?? '';
-        $owner     = $threadsMedia['owner']['id'] ?? '';
-        $shortcode = $threadsMedia['shortcode'] ?? '';
-        $text      = $threadsMedia['text'] ?? '';
-        $timestamp = $threadsMedia['timestamp'] ?? '';
-        $username  = $threadsMedia['username'] ?? '';
-        $datetime  = date_create_from_format('Y-m-d\TH:i:sO', $timestamp);
+        $id             = $threadsMedia['id'] ?? '';
+        $mediaType      = $threadsMedia['media_type'] ?? '';
+        $mediaUrl       = $threadsMedia['media_url'] ?? '';
+        $owner          = $threadsMedia['owner']['id'] ?? '';
+        $shortcode      = $threadsMedia['shortcode'] ?? '';
+        $text           = $threadsMedia['text'] ?? '';
+        $timestamp      = $threadsMedia['timestamp'] ?? '';
+        $username       = $threadsMedia['username'] ?? '';
+        $repostedPostId = $threadsMedia['reposted_post']['id'] ?? '';
+        $isQuotePost    = $threadsMedia['is_quote_post'] ?? false;
+        $quotedPostId   = $threadsMedia['quoted_post']['id'] ?? '';
+        $datetime       = date_create_from_format('Y-m-d\TH:i:sO', $timestamp);
 
-        if (!($id && $shortcode && $text && $timestamp && $datetime)) {
+        if (!($id && $shortcode && $timestamp && $datetime)) {
             return false;
         }
 
@@ -51,14 +59,31 @@ class ScrapSupport implements Support
             'post_type'      => 'ttp_threads',
             'post_name'      => "ttp-$id",
             'meta_input'     => [
-                '_ttp_timestamp' => time(),
-                '_ttp_username'  => $username,
+                '_ttp_timestamp'     => time(),
+                '_ttp_is_quote_post' => $isQuotePost,
+                '_ttp_media_type'    => $mediaType,
+                '_ttp_username'      => $username,
             ],
         ];
 
         // owner.id is not presented in reply.
         if ($owner) {
             $output['meta_input']['_ttp_owner'] = $owner;
+        }
+
+        // 'reposted_post' appeart only when you repost your own posts.
+        if ($repostedPostId) {
+            $output['meta_input']['_ttp_reposted_post_id'] = $repostedPostId;
+        }
+
+        // 'quoted_post' appears only  when you quote your own posts.
+        if ($isQuotePost && $quotedPostId) {
+            $output['meta_input']['_ttp_quoted_post_id'] = $quotedPostId;
+        }
+
+        // Image media type's image URL.
+        if (PostFields::MEDIA_TYPE_IMAGE === $mediaType && $mediaUrl) {
+            $output['meta_input']['_ttp_media_url'] = $mediaUrl;
         }
 
         return $output;
@@ -117,13 +142,32 @@ class ScrapSupport implements Support
             return;
         }
 
-        $posts     = get_posts("name={$post['post_name']}&numberposts=1&post_type=ttp_threads");
-        $isNew     = empty($posts);
-        $isChanged = !$isNew && $posts[0]->post_content !== $post['post_content'];
+        $posts = get_posts("name={$post['post_name']}&numberposts=1&post_type=ttp_threads");
+        $isNew = empty($posts);
+
+        // Raw scrap if post that is not my own is reposted.
+        // The other user's posts that are reposted havw no 'reposted_post' field.
+        $mediaType    = $threadsMedia['media_type'] ?? '';
+        $repostedPost = $threadsMedia['reposted_post']['id'] ?? '';
+        $permalink    = $threadsMedia['permalink'] ?? '';
+
+        if (
+            $this->enableRepostFetch &&
+            PostFields::MEDIA_TYPE_REPOST_FACADE === $mediaType &&
+            empty($repostedPost) &&
+            $permalink
+        ) {
+            try {
+                $post['post_content'] = $this->crawler->fetch($permalink)->extractOgDescription();
+                sleep(1); // Be polite.
+            } catch (Exception) {
+                // Skip
+            }
+        }
 
         if ($isNew) {
             wp_insert_post($post);
-        } elseif ($isChanged) {
+        } else {
             $post['ID'] = $posts[0]->ID;
             wp_update_post($post);
         }

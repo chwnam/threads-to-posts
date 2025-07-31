@@ -5,10 +5,14 @@ namespace Chwnam\ThreadsToPosts\Modules;
 use Chwnam\ThreadsToPosts\Supports\Threads\Api;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
+use Chwnam\ThreadsToPosts\Supports\Threads\Crawler;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
 use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Module;
+use Exception;
 use JetBrains\PhpStorm\NoReturn;
+use function Chwnam\ThreadsToPosts\ttpCall;
+use function Chwnam\ThreadsToPosts\ttpGet;
 use function Chwnam\ThreadsToPosts\ttpGetApi;
 
 class AdminAjaxHandler implements Module
@@ -42,7 +46,7 @@ class AdminAjaxHandler implements Module
             switch ($type) {
                 case 'posts':
                     $output = $api->getUserThreads(
-                        ['fields' => PostFields::getFields(Fields::ID, Fields::TEXT)]
+                        ['fields' => PostFields::getFields(Fields::ID, PostFields::TEXT)]
                     );
                     // Hide access token
                     if (isset($output['paging']['next'])) {
@@ -64,6 +68,12 @@ class AdminAjaxHandler implements Module
                         $id,
                         ['fields' => ConversationsFields::getFields(Fields::ALL)]
                     );
+                    break;
+
+                case 'crawling':
+                    $url    = esc_url_raw($_GET['url'] ?? '');
+                    $output = ttpGet(Crawler::class)->fetch($url)->extractOgDescription();
+                    wp_send_json_success(['output' => $output]);
                     break;
 
                 default:

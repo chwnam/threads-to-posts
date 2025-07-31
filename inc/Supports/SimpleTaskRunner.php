@@ -2,8 +2,6 @@
 
 namespace Chwnam\ThreadsToPosts\Supports;
 
-use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
-use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger as MonologLogger;
 use Chwnam\ThreadsToPosts\Interfaces\TaskQueue;
 use Chwnam\ThreadsToPosts\Interfaces\TaskRunner;
 use Chwnam\ThreadsToPosts\Modules\Logger as LoggerModule;
@@ -12,6 +10,8 @@ use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
 use Chwnam\ThreadsToPosts\Supports\Threads\Fields;
 use Chwnam\ThreadsToPosts\Supports\Threads\PostFields;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\Support;
+use Chwnam\ThreadsToPosts\Vendor\Monolog\Logger as MonologLogger;
 
 /**
  * Simple task runner

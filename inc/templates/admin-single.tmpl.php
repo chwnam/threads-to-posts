@@ -9,15 +9,19 @@ use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template\Template;
  *
  *  Context
  *  -------
- *  - id: string
- *  - owner: stirng
- *  - username: string
- *  - text: string
- *  - shortcode: string
- *  - timestamp: string
- *  - permalink: string
  *  - back_link: string
  *  - show_embled: bool
+ *  - id: string
+ *  - is_quote_post: string
+ *  - media_type: string
+ *  - owner: stirng
+ *  - permalink: string
+ *  - quoted_post_id: string
+ *  - reposted_post_id: string
+ *  - shortcode: string
+ *  - text: string
+ *  - timestamp: string
+ *  - username: string
  */
 
 if (!defined('ABSPATH')) {
@@ -34,6 +38,14 @@ if (!defined('ABSPATH')) {
             </th>
             <td>
                 <?php echo esc_html($this->get('id')); ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Media Type
+            </th>
+            <td>
+                <?php echo esc_html($this->get('media_type')); ?>
             </td>
         </tr>
         <tr>
@@ -77,6 +89,51 @@ if (!defined('ABSPATH')) {
                    target="ttp-permalink">
                     <?php echo esc_html($this->get('permalink')); ?>
                 </a>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Media URL
+            </th>
+            <td>
+                <?php if ($this->get('media_url')) : ?>
+                    <a href="<?php echo esc_url($this->get('media_url')); ?>"
+                       target="ttp-media_url">
+                        <?php echo esc_html($this->get('media_url')); ?>
+                    </a>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Repost ID
+            </th>
+            <td>
+                <?php if ($this->get('reposted_post_id')) : ?>
+                    <?php echo esc_html($this->get('reposted_post_id')); ?>
+                <?php elseif ('REPOST_FACADE' === $this->get('media_type')) : ?>
+                    Not available, reposted from the other user's post.
+                <?php else: ?>
+                    Not reposted
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Quoted Post
+            </th>
+            <td>
+                <?php if (filter_var($this->get('is_quote_post'), FILTER_VALIDATE_BOOLEAN)) : ?>
+                    Yes,
+                    <?php if ($this->get('quoted_post_id')) : ?>
+                        and it is from your post <?php echo esc_html($this->get('quoted_post_id')); ?>.
+                    <?php else: ?>
+                        and it is from the other user's post.
+                    <?php endif; ?>
+                <?php else : ?>
+                    No.
+                <?php endif; ?>
+
             </td>
         </tr>
         <?php if ($this->get('show_embled')) : ?>
