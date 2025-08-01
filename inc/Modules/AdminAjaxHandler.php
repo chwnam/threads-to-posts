@@ -2,6 +2,7 @@
 
 namespace Chwnam\ThreadsToPosts\Modules;
 
+use Chwnam\ThreadsToPosts\Supports\ScrapSupport;
 use Chwnam\ThreadsToPosts\Supports\Threads\Api;
 use Chwnam\ThreadsToPosts\Supports\Threads\ApiCallException;
 use Chwnam\ThreadsToPosts\Supports\Threads\ConversationsFields;
@@ -14,6 +15,7 @@ use JetBrains\PhpStorm\NoReturn;
 use function Chwnam\ThreadsToPosts\ttpCall;
 use function Chwnam\ThreadsToPosts\ttpGet;
 use function Chwnam\ThreadsToPosts\ttpGetApi;
+use function Chwnam\ThreadsToPosts\ttpGetLogger;
 
 class AdminAjaxHandler implements Module
 {
@@ -32,6 +34,8 @@ class AdminAjaxHandler implements Module
             $threadsId,
             ['fields' => PostFields::getFields(Fields::ALL)]
         );
+
+        ttpGet(ScrapSupport::class)->updateThreadsMedia($result);
 
         wp_send_json_success(['result' => $result]);
     }

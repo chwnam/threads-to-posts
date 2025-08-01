@@ -40,10 +40,6 @@ class AdminCompound
     {
         $output = '';
 
-        if (wp_is_numeric_array($choices)) {
-            $choices = array_combine($choices, $choices);
-        }
-
         $args = wp_parse_args(
             $args,
             [
@@ -52,14 +48,13 @@ class AdminCompound
         );
 
         if (in_array($style, ['checkbox', 'radio'], true)) {
-            $style = [
-                'list-type: none;',
-                'margin: 0;',
-                'padding: 0;',
-            ];
+            $inlineStyle = ['list-type: none;', 'margin: 0;', 'padding: 0;'];
             if ('horizontal' === $args['orientation']) {
-                $style[] = 'display: flex;';
+                $inlineStyle[] = 'display: flex;';
             }
+
+            $value = (array)$value;
+
             /* e.g.
              * <ul style="list-type: none; margin: 0; padding: 0;">
              *   <li>
@@ -68,24 +63,30 @@ class AdminCompound
              *   ...
              * </ul>
              */
-            R::open('ul', F::canonAttrs($attrs, ['style' => $style]));
+            $output .= R::open('ul', F::canonAttrs($attrs, ['style' => $inlineStyle]));
 
             foreach ($choices as $val => $label) {
-                R::open('li');
+                $output .= R::open('li');
 
-                if (isset($attrs['id'])) {
-                    $attrs['id'] .= '-' . $val;
+                $itemAttrs = $attrs;
+                if (isset($itemAttrs['id'])) {
+                    $itemAttrs['id'] .= '-' . $val;
                 }
+                if (isset($itemAttrs['name']) && !str_ends_with($itemAttrs['name'], '[]') && 'checkbox' === $style) {
+                    $itemAttrs['name'] .= '[]';
+                }
+                $itemAttrs['value'] = $val;
+
                 if ('checkbox' === $style) {
-                    R::checkbox($label, $val == $value, $attrs);
+                    $output .= R::checkbox($label, in_array($val, $value), $itemAttrs);
                 } else {
-                    R::radio($label, $val == $value, $attrs);
+                    $output .= R::radio($label, in_array($val, $value), $itemAttrs);
                 }
 
-                R::close();
+                $output .= R::close();
             }
 
-            R::close();
+            $output .= R::close();
         } elseif ('select' === $style) {
             // Select: default. To allow multi-selection, add 'multiple' to $attrs.
             $output = R::select($choices, $value, $attrs);

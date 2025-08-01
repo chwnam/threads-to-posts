@@ -106,6 +106,19 @@ if (!defined('ABSPATH')) {
         </tr>
         <tr>
             <th scope="row">
+                Link Attachemnt URL
+            </th>
+            <td>
+                <?php if ($this->get('link_attachment_url')) : ?>
+                    <a href="<?php echo esc_url($this->get('link_attachment_url')); ?>"
+                       target="ttp-link_attachment_url">
+                        <?php echo esc_html($this->get('link_attachment_url')); ?>
+                    </a>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
                 Repost ID
             </th>
             <td>
@@ -136,6 +149,14 @@ if (!defined('ABSPATH')) {
 
             </td>
         </tr>
+        <tr>
+            <th scope="row">
+                Topic Tag
+            </th>
+            <td>
+                <?php echo esc_html($this->get('topic_tag')); ?>
+            </td>
+        </tr>
         <?php if ($this->get('show_embled')) : ?>
             <tr>
                 <th scope="row">
@@ -161,13 +182,13 @@ if (!defined('ABSPATH')) {
         </a>
     </p>
     <div id="ttp-fetch-article-container">
-        <h3>Fetch Article</h3>
+        <h3>Update Article</h3>
         <button
                 id="ttp-fetch-article"
                 class="button button-primary"
                 data-id="<?php echo esc_attr($this->get('id')); ?>"
                 data-nonce="<?php echo esc_attr(wp_create_nonce('ttp_fetch_article')); ?>">
-            Fetch Now
+            Update
         </button>
         <div>
             <pre id="ttp-fetch-article-result">

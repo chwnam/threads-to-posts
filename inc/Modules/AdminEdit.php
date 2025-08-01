@@ -116,19 +116,21 @@ class AdminEdit implements Module
     public function outputContent(WP_Post $post): void
     {
         $context = [
-            'id'               => ttpUnprefix($post->post_name),
-            'is_quote_post'    => get_post_meta($post->ID, '_ttp_is_quote_post', true),
-            'media_type'       => get_post_meta($post->ID, '_ttp_media_type', true),
-            'media_url'        => get_post_meta($post->ID, '_ttp_media_url', true),
-            'owner'            => get_post_meta($post->ID, '_ttp_owner', true),
-            'permalink'        => ttpPostPermalink($post),
-            'quoted_post_id'   => get_post_meta($post->ID, '_ttp_quoted_post_id', true),
-            'reposted_post_id' => get_post_meta($post->ID, '_ttp_reposted_post_id', true),
-            'shortcode'        => $post->post_content,
-            'text'             => wpautop(wptexturize($post->post_content)),
-            'timestamp'        => $post->post_date,
-            'username'         => get_post_meta($post->ID, '_ttp_username', true),
-            'show_embed'       => false,
+            'id'                  => ttpUnprefix($post->post_name),
+            'is_quote_post'       => get_post_meta($post->ID, '_ttp_is_quote_post', true),
+            'link_attachment_url' => get_post_meta($post->ID, '_ttp_link_attachment_url', true),
+            'media_type'          => get_post_meta($post->ID, '_ttp_media_type', true),
+            'media_url'           => get_post_meta($post->ID, '_ttp_media_url', true),
+            'owner'               => get_post_meta($post->ID, '_ttp_owner', true),
+            'permalink'           => ttpPostPermalink($post),
+            'quoted_post_id'      => get_post_meta($post->ID, '_ttp_quoted_post_id', true),
+            'reposted_post_id'    => get_post_meta($post->ID, '_ttp_reposted_post_id', true),
+            'shortcode'           => $post->post_content,
+            'text'                => wpautop(wptexturize($post->post_content)),
+            'timestamp'           => $post->post_date,
+            'topic_tag'           => get_post_meta($post->ID, '_ttp_topic_tag', true),
+            'username'            => get_post_meta($post->ID, '_ttp_username', true),
+            'show_embed'          => false,
         ];
 
         $referer = wp_get_referer();

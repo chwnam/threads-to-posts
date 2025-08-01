@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template;
 
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Helper\Helper;
+
 final class Template
 {
     /**
@@ -55,8 +57,9 @@ final class Template
      */
     private array $store;
 
-    public function __construct(array $args = [])
+    public function __construct(array|string $args = '')
     {
+        $args = Helper::loadConfig($args);
         $args = wp_parse_args(
             $args,
             [

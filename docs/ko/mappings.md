@@ -63,16 +63,18 @@
 
 아래는 메타 키 입니다.
 
-| 키                     | 설명                                                             |
-|-----------------------|----------------------------------------------------------------|
-| _ttp_timestamp        | 이 게시물이 수집될 당시의 유닉스 타임스탬프입니다.                                   |
-| _ttp_is_quote_post    | 인용된 게시물인지 표시합니다. (1.0.0-beta.4 부터)                             |
-| _ttp_media_type       | media_type 필드입니다. (1.0.0-beta.4 부터)                            |
-| _ttp_media_url        | media_url 필드입니다. (1.0.0-beta.4 부터)                             |
-| _ttp_reposted_post_id | 리포스트된 포스트 ID 입니다. 자기 게시물을 리포스트한 경우에만 보입니다. (1.0.0-beta.4 부터)   |
-| _ttp_owner            | owner.id 필드입니다.                                                |
-| _ttp_quoted_post_id   | quoted_post.id 필드입니다. 자기 게시물을 인용할 경우에만 보입니다. (1.0.0-beta.4 부터) |
-| _ttp_username         | username 필드입니다.                                                |
+| 키                        | 설명                                                             |
+|--------------------------|----------------------------------------------------------------|
+| _ttp_timestamp           | 이 게시물이 수집될 당시의 유닉스 타임스탬프입니다.                                   |
+| _ttp_is_quote_post       | 인용된 게시물인지 표시합니다. (1.0.0-beta.4 부터)                             |
+| _ttp_link_attachment_url | 외부 링크 주소 필드입니다 (1.0.0-bate.5 부터)                               |
+| _ttp_media_type          | media_type 필드입니다. (1.0.0-beta.4 부터)                            |
+| _ttp_media_url           | media_url 필드입니다. (1.0.0-beta.4 부터)                             |
+| _ttp_reposted_post_id    | 리포스트된 포스트 ID 입니다. 자기 게시물을 리포스트한 경우에만 보입니다. (1.0.0-beta.4 부터)   |
+| _ttp_topic_tag           | topic_tag 필드입니다. (1.0.0-beta.5 부터)                             |
+| _ttp_owner               | owner.id 필드입니다.                                                |
+| _ttp_quoted_post_id      | quoted_post.id 필드입니다. 자기 게시물을 인용할 경우에만 보입니다. (1.0.0-beta.4 부터) |
+| _ttp_username            | username 필드입니다.                                                |
 
 - 1.0.0-beta.4 부터 타 유저의 포스트를 리포스트하는 경우 간단한 크롤링을 ㅅ행합니다.
   텍스트 데이터만 일부 추출해 `post_content` 필드에 기록합니다. 모든 내용을 정확히 추출하지 못할 수도 있습니다.

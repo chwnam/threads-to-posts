@@ -106,6 +106,8 @@ class Filter
 
         if (is_string($input)) {
             $input = preg_split('/\s+/', $input);
+        } else {
+            $input = (array)$input;
         }
 
         if (is_array($input) && is_callable($func)) {

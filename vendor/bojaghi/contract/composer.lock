@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0edf1e82a5c2fa7b2e53c9c2332957d",
+    "content-hash": "91dd54c8e05e519d018a0a6da3708121",
     "packages": [
         {
             "name": "psr/container",
@@ -60,7 +60,41 @@
             "time": "2021-11-05T16:47:00+00:00"
         }
     ],
-    "packages-dev": [],
+    "packages-dev": [
+        {
+            "name": "bojaghi/dictionary",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bojaghi/dictionary.git",
+                "reference": "70130f9a15db4e57a6bd8811e36b02d01d62f243"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bojaghi/dictionary/zipball/70130f9a15db4e57a6bd8811e36b02d01d62f243",
+                "reference": "70130f9a15db4e57a6bd8811e36b02d01d62f243",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "changwoo",
+                    "email": "ep6tri@hotmail.com"
+                }
+            ],
+            "description": "Additional dictionary for spell checking",
+            "homepage": "https://github.com/bojaghi/dictionary",
+            "support": {
+                "issues": "https://github.com/bojaghi/dictionary/issues",
+                "source": "https://github.com/bojaghi/dictionary/tree/1.0.0"
+            },
+            "time": "2025-07-14T05:26:24+00:00"
+        }
+    ],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {},

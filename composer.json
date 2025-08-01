@@ -44,7 +44,7 @@
     "minimum-stability": "beta",
     "require": {
         "php": ">=8.0",
-        "bojaghi/continy": "^1.1",
+        "bojaghi/continy": "^1.2",
         "bojaghi/cron": "^1.0",
         "monolog/monolog": "^3.9",
         "bojaghi/template": "^1.0",

@@ -4,8 +4,55 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b69c58be97ebd09200336e7cd8fd02e1",
-    "packages": [],
+    "content-hash": "a412926b691189c47bf0c7ec5ca818b6",
+    "packages": [
+        {
+            "name": "bojaghi/helper",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bojaghi/helper.git",
+                "reference": "e84223e627e5f86e6e4b1986f42b506c22071e82"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bojaghi/helper/zipball/e84223e627e5f86e6e4b1986f42b506c22071e82",
+                "reference": "e84223e627e5f86e6e4b1986f42b506c22071e82",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "bojaghi/wp-tests": "^1.0",
+                "phpunit/phpunit": "^9",
+                "yoast/phpunit-polyfills": "^3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bojaghi\\Helper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "changwoo",
+                    "email": "ep6tri@hotmail.com"
+                }
+            ],
+            "description": "Helper methods collection.",
+            "homepage": "https://github.com/bojaghi/helper",
+            "support": {
+                "issues": "https://github.com/bojaghi/helper/issues",
+                "source": "https://github.com/bojaghi/helper/tree/1.1.0"
+            },
+            "time": "2024-12-19T01:41:49+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "bojaghi/wp-tests",

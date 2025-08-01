@@ -9,6 +9,7 @@ use ReflectionClass;
 use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionUnionType;
+use Throwable;
 
 /**
  * Continy - A tiny container class for WordPress plugin and theme development that supports really simple D.I.
@@ -138,7 +139,7 @@ class Continy implements Container
             foreach ($items as $alias) {
                 if (is_callable($alias)) {
                     $this->call($alias);
-                } elseif (isset($this->resolved[$alias])) {
+                } elseif (isset($this->resolved[$alias]) || class_exists($alias)) {
                     call_user_func($this->bindModule($alias));
                 }
             }
@@ -535,11 +536,6 @@ class Continy implements Container
         return $output;
     }
 
-    public static function concatName(string $className, string $methodName): string
-    {
-        return $className . '::' . $methodName;
-    }
-
     public static function formatName(mixed $maybeCallable): string
     {
         if (is_array($maybeCallable) && 2 === count($maybeCallable)) {
@@ -553,6 +549,57 @@ class Continy implements Container
         }
 
         return (string)$maybeCallable;
+    }
+
+    /**
+     * @param string|array|callable $callback
+     *
+     * @return callable|null
+     */
+    public function parseCallback(string|array|callable $callback): ?callable
+    {
+        if (is_callable($callback)) {
+            // string, callable
+            return $callback;
+        }
+
+        if (is_string($callback) && str_contains($callback, '@')) {
+            $split = explode('@', $callback, 2);
+        } else {
+            // array.
+            $split = $callback;
+        }
+
+        $result = null;
+
+        try {
+            if (2 === count($split)) {
+                // 'foo@bar' style.
+                $cls    = $split[0];
+                $method = $split[1];
+
+                if (is_callable([$cls, $method])) {
+                    // Maybe static method.
+                    $result = [$cls, $method];
+                } else {
+                    // Alias, or FQCN
+                    $object = $this->get($cls);
+                    if (is_callable([$object, $method])) {
+                        $result = [$object, $method];
+                    }
+                }
+            } elseif (1 === count($split)) {
+                // It may be a class name, a container alias.
+                $instance = $this->get($split[0]);
+                if (is_callable($instance)) {
+                    $result = $instance;
+                }
+            }
+        } catch (Throwable) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function getMain(): string

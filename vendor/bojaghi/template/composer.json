@@ -21,7 +21,8 @@
         }
     ],
     "require": {
-        "php": ">=8.0"
+        "php": ">=8.0",
+        "bojaghi/helper": "^1.1"
     },
     "require-dev": {
         "bojaghi/wp-tests": "^1.0",
@@ -56,5 +57,5 @@
             "bin/install-wp-tests.sh $DB_NAME $DB_USER $DB_PASS $DB_HOST latest"
         ]
     },
-    "version": "1.0.0"
+    "version": "1.0.1"
 }

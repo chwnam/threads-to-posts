@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy;
 
-class ContinyFactory
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Contract\ContinyFactory as ContinyFactoryInterface;
+
+class ContinyFactory implements ContinyFactoryInterface
 {
     /**
-     * @throws \Bojaghi\Continy\ContinyException
+     * @throws ContinyException
      */
     public static function create(array|string $setup): Continy
     {

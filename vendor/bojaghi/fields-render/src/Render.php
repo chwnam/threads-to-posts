@@ -187,7 +187,7 @@ class Render
     {
         $attrs            = wp_parse_args($attrs);
         $attrs['checked'] = $checked;
-        $attrs['type']    = 'checkbox';
+        $attrs['type']    = 'radio';
 
         return self::input($attrs) . self::label($label, ['for' => $attrs['id'] ?? '']);
     }

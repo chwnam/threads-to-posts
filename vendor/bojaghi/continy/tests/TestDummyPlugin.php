@@ -4,6 +4,7 @@ namespace Bojaghi\Continy\Tests;
 
 use Bojaghi\Continy\Continy;
 use Bojaghi\Continy\Tests\DummyPlugin\IncompleteTester;
+use Bojaghi\Continy\Tests\DummyPlugin\Modules\_FQCNModule;
 use Bojaghi\Continy\Tests\DummyPlugin\Supports\AliasedModuleSupport;
 use Bojaghi\Continy\Tests\DummyPlugin\Supports\DummySupport;
 use WP_UnitTestCase;
@@ -199,5 +200,10 @@ class TestDummyPlugin extends WP_UnitTestCase
     {
         $value = $this->continy->get(AliasedModuleSupport::class)->getValue();
         $this->assertEquals('success', $value);
+    }
+
+    public function test__FQCNModule()
+    {
+        $this->assertEquals(1, _FQCNModule::$value);
     }
 }

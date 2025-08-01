@@ -2,19 +2,25 @@
 
 ## Beta Phase
 
-### 1.0.0.beta-4
+### 1.0.0-beta.5
+
+- Support link_attachment_url field, topic_tag fields.
+- 'Fetch Now' button in the admin single is renamed to 'Update Now' button.
+- Bojaghi package update.
+
+### 1.0.0-beta.4
 
 2024-08-01
 
 - Support for more detailed fields:
-  - is_quote_post
-  - media_type
-  - media_url
-  - reposted_post.id
-  - quited_post.id
+    - is_quote_post
+    - media_type
+    - media_url
+    - reposted_post.id
+    - quited_post.id
 - Support simple text fetching from other users' posts when you repost it.
 - Add crawl test in the admin tester page.
-- Fix wrong redirection after authorization. 
+- Fix wrong redirection after authorization.
 
 ### 1.0.0.beta-3
 
@@ -26,7 +32,7 @@
 - Fix wrong total number display when used with `--forever` switch
 - Update logger format, now it can display context data, and extra data
 - Update task queue, now it can compressto task queue
-- Update task queue run behavior, now it saves while running, after completing every 50 tasks 
+- Update task queue run behavior, now it saves while running, after completing every 50 tasks
 - Remove version from composer.json
 - Update docs
 

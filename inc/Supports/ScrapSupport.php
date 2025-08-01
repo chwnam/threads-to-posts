@@ -30,18 +30,20 @@ class ScrapSupport implements Support
      */
     public function convertThreadsMedia(array $threadsMedia): array|false
     {
-        $id             = $threadsMedia['id'] ?? '';
-        $mediaType      = $threadsMedia['media_type'] ?? '';
-        $mediaUrl       = $threadsMedia['media_url'] ?? '';
-        $owner          = $threadsMedia['owner']['id'] ?? '';
-        $shortcode      = $threadsMedia['shortcode'] ?? '';
-        $text           = $threadsMedia['text'] ?? '';
-        $timestamp      = $threadsMedia['timestamp'] ?? '';
-        $username       = $threadsMedia['username'] ?? '';
-        $repostedPostId = $threadsMedia['reposted_post']['id'] ?? '';
-        $isQuotePost    = $threadsMedia['is_quote_post'] ?? false;
-        $quotedPostId   = $threadsMedia['quoted_post']['id'] ?? '';
-        $datetime       = date_create_from_format('Y-m-d\TH:i:sO', $timestamp);
+        $id                = $threadsMedia['id'] ?? '';
+        $mediaType         = $threadsMedia['media_type'] ?? '';
+        $mediaUrl          = $threadsMedia['media_url'] ?? '';
+        $owner             = $threadsMedia['owner']['id'] ?? '';
+        $shortcode         = $threadsMedia['shortcode'] ?? '';
+        $text              = $threadsMedia['text'] ?? '';
+        $timestamp         = $threadsMedia['timestamp'] ?? '';
+        $username          = $threadsMedia['username'] ?? '';
+        $repostedPostId    = $threadsMedia['reposted_post']['id'] ?? '';
+        $isQuotePost       = $threadsMedia['is_quote_post'] ?? false;
+        $quotedPostId      = $threadsMedia['quoted_post']['id'] ?? '';
+        $linkAttachmentUrl = $threadsMedia['link_attachment_url'] ?? '';
+        $toplicTag         = $threadsMedia['topic_tag'] ?? '';
+        $datetime          = date_create_from_format('Y-m-d\TH:i:sO', $timestamp);
 
         if (!($id && $shortcode && $timestamp && $datetime)) {
             return false;
@@ -84,6 +86,16 @@ class ScrapSupport implements Support
         // Image media type's image URL.
         if (PostFields::MEDIA_TYPE_IMAGE === $mediaType && $mediaUrl) {
             $output['meta_input']['_ttp_media_url'] = $mediaUrl;
+        }
+
+        // 'link_attachment_url' field
+        if ($linkAttachmentUrl) {
+            $output['meta_input']['_ttp_link_attachment_url'] = $linkAttachmentUrl;
+        }
+
+        // 'toplic_tag' field
+        if ($toplicTag) {
+            $output['meta_input']['_ttp_topic_tag'] = $toplicTag;
         }
 
         return $output;

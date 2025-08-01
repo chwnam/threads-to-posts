@@ -52,4 +52,54 @@ class Helper
             array_values($indexed),
         ];
     }
+
+    /**
+     * Prefix helper
+     *
+     * @param string $input
+     * @param string $prefix
+     *
+     * @return string
+     */
+    public static function prefixed(string $input, string $prefix): string
+    {
+        return str_starts_with($input, $prefix) ? $input : ($prefix . $input);
+    }
+
+    /**
+     * Un-prefix string
+     *
+     * @param string $input
+     * @param string $prefix
+     *
+     * @return string
+     */
+    public static function unprefixed(string $input, string $prefix): string
+    {
+        return str_starts_with($input, $prefix) ? substr($input, strlen($prefix)) : $input;
+    }
+
+    /**
+     * Convert input string to camel-cased string
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    public static function toCamelCase(string $input): string
+    {
+        return lcfirst(str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $input))));
+    }
+
+    /**
+     * Converts a given camelCase or PascalCase string to snake_case.
+     *
+     * @param string $input The input string in camelCase or PascalCase format.
+     *
+     * @return string The converted string in snake_case format.
+     */
+    public static function toSnakeCase(string $input): string
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $input));
+    }
 }

@@ -1,5 +1,50 @@
 # CHANGELOG
 
+## 1.2.4
+
+2025-08-12
+
+- Add test for missing arguments completion.
+- Fix namespace error.
+
+## 1.2.3
+
+2025-07-15
+
+- Add try-catch block inside `Continy::parseCallback`.
+
+## 1.2.2
+
+2025-07-14
+
+- Fix `Continy::parseCallback` bug.
+
+## 1.2.1
+
+2025-07-14
+
+- Fix missing implements.
+
+## 1.2.0
+
+2025-07-14
+
+- Update `bojaghi/contract` to 1.3.
+- Remove `Continy::concatName` method.
+
+## 1.1.5
+
+2025-07-14
+
+- Update `bojaghi/contract` to 1.2. No breaking changes.
+- Replace `custom.dic` to `bojaghi/dictionary`'s version.
+
+## 1.1.4
+
+2025-05-05
+
+- Fix error when underscored(_) modules were not loaded correctly if class names are used directly.
+
 ## 1.1.3
 
 2025-04-19

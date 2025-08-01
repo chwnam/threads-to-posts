@@ -4,7 +4,7 @@
 
 ## 사용법
 
-`Bojaghi\Template\Template` 클래스를 객체화 합니다.
+`Bojaghi\Template\Template` 클래스를 객체화 합니다. 아래처럼 직접 배열을 넣는 방법이 있습니다. 
 
 ```php
 use Bojaghi\Template\Template
@@ -18,6 +18,14 @@ $t = new Template(
         ],
     ],
 );
+```
+
+또는 동일한 배열을 리턴하는 파일 경로를 입력할 수도 있습니다.
+
+```php
+use Bojaghi\Template\Template
+
+$t = new Template('/path/to/config');
 ```
 
 입력되는 인자는 하나의 연관배열이며 다음 값을 갖습니다.
