@@ -83,8 +83,8 @@ class ScrapSupport implements Support
             $output['meta_input']['_ttp_quoted_post_id'] = $quotedPostId;
         }
 
-        // Image media type's image URL.
-        if (PostFields::MEDIA_TYPE_IMAGE === $mediaType && $mediaUrl) {
+        // 'media_url' field
+        if ($mediaUrl) {
             $output['meta_input']['_ttp_media_url'] = $mediaUrl;
         }
 

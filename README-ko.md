@@ -17,7 +17,7 @@ git clone https://github.com/chwnam/threads-to-posts.git
 
 플러그인을 디렉토리째 워드프레스의 `wp-content/plugins/` 아래로 옮긴 후 플러그인 루트로 이동합니다.
 워드프레스에 로그인 한 후, 관리자 페이지로 가서 플러그인을 활성화합니다.
-그러면 관리자 > 도구 메뉴에서 'Threads to Posts'를 발견할 수 있습니다.
+그러면 관리자 페이지 메뉴에서 'Threads'를 발견할 수 있습니다.
 
 ## 설정 안내
 

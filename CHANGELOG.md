@@ -2,7 +2,16 @@
 
 ## Beta Phase
 
+### 1.0.0-beta.6
+
+2025-08-05
+
+- Fix writing 'meda_url' only when media_type is image.
+- Fix doc typos.
+
 ### 1.0.0-beta.5
+
+2025-08-02
 
 - Support link_attachment_url field, topic_tag fields.
 - 'Fetch Now' button in the admin single is renamed to 'Update Now' button.
@@ -10,7 +19,7 @@
 
 ### 1.0.0-beta.4
 
-2024-08-01
+2025-08-01
 
 - Support for more detailed fields:
     - is_quote_post
@@ -24,7 +33,7 @@
 
 ### 1.0.0.beta-3
 
-2024-05-04
+2025-05-04
 
 - Add log when API server returns a string type status code
 - Add addtional exception code when API server returns a string-typed status code
@@ -38,7 +47,7 @@
 
 ### 1.0.0.beta-2
 
-2024-05-04
+2025-05-04
 
 - Fix CSS loading error
 - Add feature: fetching threads single post and display the raw API result in the admin single page.
@@ -46,7 +55,7 @@
 
 ### 1.0.0.beta-1
 
-2024-04-28
+2025-04-28
 
 - Add English version documentation
 - Namespce prefixing
@@ -55,7 +64,7 @@
 
 ### 0.12
 
-2024-04-24
+2025-04-24
 
 - API 덤프 기능 삭제
 - 가벼운 모드 스크랩일 때 수집된 글의 모든 댓글을 수집하게 수정
@@ -70,7 +79,7 @@
 
 ### 0.11
 
-2024-04-22
+2025-04-22
 
 - 큐의 태스크 구분자를 콤마에서 리턴으로 변경
 - README.md 에 설정법과 글 수집법 추가
@@ -79,14 +88,14 @@
 
 ### 0.10
 
-2024-04-21
+2025-04-21
 
 - 태스크 러너 기능 개선
 - CLI 문서 추가
 
 ### 0.9
 
-2024-04-19
+2025-04-19
 
 - 큐 러너 안정화
 - 변경 기록에 표기된 잘못된 연도 수정
