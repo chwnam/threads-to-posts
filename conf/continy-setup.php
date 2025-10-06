@@ -6,6 +6,7 @@ use Chwnam\ThreadsToPosts\Vendor\Bojaghi\AdminAjax\AdminAjax;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\AdminAjax\AdminPost;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Continy\Continy;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\CustomPosts\CustomPosts;
+use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Tax\CustomTaxonomies;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Cron;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Fields;
 use Chwnam\ThreadsToPosts\Vendor\Bojaghi\Template;
@@ -42,8 +43,9 @@ return [
     'bindings'  => [
         'bojaghi/adminAjax'    => AdminAjax::class,
         'bojaghi/adminPost'    => AdminPost::class,
-        'bojaghi/customPosts'  => CustomPosts::class,
         'bojaghi/cron'         => Cron\Cron::class,
+        'bojaghi/customPosts'  => CustomPosts::class,
+        'bojaghi/customTax'    => CustomTaxonomies::class,
         'bojachi/cronSched'    => Cron\CronSchedule::class,
         'bojaghi/template'     => Template\Template::class,
         'ttp/actvDctv'         => Modules\ActivationDeactivation::class,
@@ -79,6 +81,7 @@ return [
         'bojaghi/cron'                        => dirname(TTP_MAIN) . '/conf/cron-setup.php',
         'bojachi/cronSched'                   => dirname(TTP_MAIN) . '/conf/cron-sched-setup.php',
         'bojaghi/customPosts'                 => dirname(TTP_MAIN) . '/conf/custom-posts-setup.php',
+        'bojaghi/customTax'                   => dirname(TTP_MAIN) . '/conf/custom-tax-setup.php',
         'bojaghi/template'                    => [
             [
                 'infix'  => 'tmpl',
@@ -148,6 +151,7 @@ return [
                 'bojaghi/adminAjax',
                 'bojaghi/adminPost',
                 'bojaghi/customPosts',
+                'bojaghi/customTax',
                 // TTP
                 'ttp/adminEdit',
                 'ttp/adminMenu',

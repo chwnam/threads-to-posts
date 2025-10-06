@@ -62,6 +62,7 @@ return array(
     'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Fields\\Option\\OptionFactory' => $vendorDir . '/bojaghi/fields/src/Option/OptionFactory.php',
     'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Helper\\Facades' => $vendorDir . '/bojaghi/helper/src/Facades.php',
     'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Helper\\Helper' => $vendorDir . '/bojaghi/helper/src/Helper.php',
+    'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Tax\\CustomTaxonomies' => $vendorDir . '/bojaghi/custom-taxonomies/src/CustomTaxonomies.php',
     'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Template\\Template' => $vendorDir . '/bojaghi/template/src/Template.php',
     'Chwnam\\ThreadsToPosts\\Vendor\\Monolog\\Attribute\\AsMonologProcessor' => $vendorDir . '/monolog/monolog/src/Monolog/Attribute/AsMonologProcessor.php',
     'Chwnam\\ThreadsToPosts\\Vendor\\Monolog\\Attribute\\WithMonologChannel' => $vendorDir . '/monolog/monolog/src/Monolog/Attribute/WithMonologChannel.php',

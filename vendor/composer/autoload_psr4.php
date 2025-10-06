@@ -11,6 +11,7 @@ return array(
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Chwnam\\ThreadsToPosts\\' => array($baseDir . '/inc'),
     'Bojaghi\\Template\\' => array($vendorDir . '/bojaghi/template/src'),
+    'Bojaghi\\Tax\\' => array($vendorDir . '/bojaghi/custom-taxonomies/src'),
     'Bojaghi\\Helper\\' => array($vendorDir . '/bojaghi/helper/src'),
     'Bojaghi\\Fields\\' => array($vendorDir . '/bojaghi/fields/src'),
     'Bojaghi\\FieldsRender\\' => array($vendorDir . '/bojaghi/fields-render/src'),

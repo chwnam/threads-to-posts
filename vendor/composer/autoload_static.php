@@ -27,6 +27,7 @@ class ComposerStaticInit3be140a8e41c36b1f7b075290f3dc526
         'B' => 
         array (
             'Bojaghi\\Template\\' => 17,
+            'Bojaghi\\Tax\\' => 12,
             'Bojaghi\\Helper\\' => 15,
             'Bojaghi\\Fields\\' => 15,
             'Bojaghi\\FieldsRender\\' => 21,
@@ -58,6 +59,10 @@ class ComposerStaticInit3be140a8e41c36b1f7b075290f3dc526
         'Bojaghi\\Template\\' => 
         array (
             0 => __DIR__ . '/..' . '/bojaghi/template/src',
+        ),
+        'Bojaghi\\Tax\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/bojaghi/custom-taxonomies/src',
         ),
         'Bojaghi\\Helper\\' => 
         array (
@@ -150,6 +155,7 @@ class ComposerStaticInit3be140a8e41c36b1f7b075290f3dc526
         'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Fields\\Option\\OptionFactory' => __DIR__ . '/..' . '/bojaghi/fields/src/Option/OptionFactory.php',
         'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Helper\\Facades' => __DIR__ . '/..' . '/bojaghi/helper/src/Facades.php',
         'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Helper\\Helper' => __DIR__ . '/..' . '/bojaghi/helper/src/Helper.php',
+        'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Tax\\CustomTaxonomies' => __DIR__ . '/..' . '/bojaghi/custom-taxonomies/src/CustomTaxonomies.php',
         'Chwnam\\ThreadsToPosts\\Vendor\\Bojaghi\\Template\\Template' => __DIR__ . '/..' . '/bojaghi/template/src/Template.php',
         'Chwnam\\ThreadsToPosts\\Vendor\\Monolog\\Attribute\\AsMonologProcessor' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Attribute/AsMonologProcessor.php',
         'Chwnam\\ThreadsToPosts\\Vendor\\Monolog\\Attribute\\WithMonologChannel' => __DIR__ . '/..' . '/monolog/monolog/src/Monolog/Attribute/WithMonologChannel.php',

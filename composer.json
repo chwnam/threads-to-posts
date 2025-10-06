@@ -54,7 +54,8 @@
         "bojaghi/custom-posts": "^1.0",
         "ext-pcntl": "*",
         "ext-zlib": "*",
-        "psr/log": "^3.0"
+        "psr/log": "^3.0",
+        "bojaghi/custom-taxonomies": "^1.0"
     },
     "require-dev": {
         "bojaghi/wp-tests": "^1.1",

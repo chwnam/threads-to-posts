@@ -178,10 +178,19 @@ class ScrapSupport implements Support
         }
 
         if ($isNew) {
-            wp_insert_post($post);
+            $postId = wp_insert_post($post);
         } else {
             $post['ID'] = $posts[0]->ID;
-            wp_update_post($post);
+            $postId     = wp_update_post($post);
+        }
+
+        if (!empty($threadsMedia['topic_tag']) && is_int($postId)) {
+            $terms = array_unique(array_filter(array_map('trim', explode(',', $threadsMedia['topic_tag']))));
+            wp_set_object_terms(
+                object_id: $postId,
+                terms:     $terms,
+                taxonomy:  'ttp_tag',
+            );
         }
     }
 

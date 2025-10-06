@@ -2,6 +2,12 @@
 
 ## Beta Phase
 
+### 1.0.0-beta.7
+
+2025-10-16
+
+- Support 'topic_tag' maipping onto 'ttp_tag' taxonomy.
+
 ### 1.0.0-beta.6
 
 2025-08-05
