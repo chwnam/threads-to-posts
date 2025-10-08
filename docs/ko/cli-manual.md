@@ -12,6 +12,7 @@ wp ttp <command>
 - access-token
 - add
 - export
+- fetch
 - import
 - me
 - remove
@@ -97,6 +98,17 @@ wp ttp export <file_name>
 ```
 wp ttp export -
 ```
+
+### Fetch
+
+단일 스레드 포스트를 읽어 옵니다.
+
+```bash
+wp ttp fetch <id>
+```
+
+`id`로는 정수, 또는 문자열을 입력할 수 있습니다.
+
 
 ### Import
 
